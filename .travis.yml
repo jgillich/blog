@@ -1,0 +1,13 @@
+language: ruby
+script: bundle exec middleman build
+sudo: false
+after_success: |
+  export PATH=$HOME/.local/bin:$PATH &&
+  [ $TRAVIS_BRANCH = master ] &&
+  [ $TRAVIS_PULL_REQUEST = false ] &&
+  pip install ghp-import --user `whoami` &&
+  ghp-import -n build &&
+  git push -fq https://${TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages
+env:
+  global:
+    - secure: pXwJ4SVOVFfvGtMS4dxdQk6sUKXlK0tdqyHTliBuMIQps7UplVNn2z54O9GKVvoy/DKWMzxtGW64ESIejjIdGSUJUyOnzyFEBYOfCR/slcIlxed6+jn25nBCtySuzM4oN4er93ufnj8QpkwxMqbt2NKh5y0v8v52m3aoYVqxBoFppfcFt3qnefXZ6ecwSvG2RtBqr1E+WEIkyvTsGaDgzuvvd8ZHxXwXpG1h21tQuuhkH8L7vzOdvpEqlozkTvNxipF58zxDspHOnJeQd7qpqyi9rCrGBDsO/780b1ZSuwCkO41ffa9fsAhpGtqEevKOHsRvM7avTtVVsKlB35TvQDmzARcZzBQHIaBbrpyVPzjZOq6ai9y1k0t6wx+J8EJR1dkm8w+wv0IEfOav4fS9Fr++8gqAL4guqapipfVKQ6jfuWZhcd86X9ha0zt/BW1rUojz3KgdBpNaavVf1kpg+6DGvk6a/5zg+USKTfQAGelxxELBdMRMFn0OycjrSzNwuHKShU6eEBMY/FFainxsYhAwKarlLe6+vyypr5nakj1PA2u2O9f7DI3bybfaopnNQ2vXM3WhnKtYzqW4NzjwOmGCGkdzXr0fdKgqe0DzJVI2HStG0AqmhQp/RvIW7Ak0IBjotCaE0R3m9LvNrSp4dEGBZTS8v+n8q66Nqw6RyM2YeRlGzbJy0PpwKkpyMXK3cZIuPqiT0aMsV8u7mI=
