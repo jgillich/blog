@@ -1,0 +1,11 @@
+---
+layout: post
+title: CentOS 7
+date: 2014-07-21
+---
+```
+[root@centos7 ~]# yum install nginx
+No package nginx available.
+```
+
+Yes, they are dead serious. But they ship nginx in [RHSCL 1.1](https://developerblog.redhat.com/2014/06/04/red-hat-software-collections-rhscl-1-1-now-ga/), which sadly isn't available on CentOS yet.
