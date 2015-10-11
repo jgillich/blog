@@ -1,5 +1,4 @@
 ---
-layout: post
 title: ownCloud Client Configuration Folder
 date: 2013-10-19
 ---

@@ -1,5 +1,4 @@
 ---
-layout: post
 title: CentOS 7
 date: 2014-07-21
 ---

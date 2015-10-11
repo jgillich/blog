@@ -1,10 +1,8 @@
 ---
-layout: post
 title: HTTPS Almost Everywhere
 date: 2013-10-14
 ---
 I have a free SSL certificate from [StartSSL](https://startssl.com/) for all my domains. To force HTTPS everywhere in Apache's httpd, I use the following virtual host:
-
 
     <VirtualHost _default_:80>
       RewriteEngine On

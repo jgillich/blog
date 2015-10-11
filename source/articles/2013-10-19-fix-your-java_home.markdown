@@ -1,5 +1,4 @@
 ---
-layout: post
 title: Fix your JAVA_HOME
 date: 2013-10-19
 ---

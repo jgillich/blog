@@ -1,5 +1,4 @@
 ---
-layout: post
 title: Smaller Moment.js
 date: 2014-01-10
 ---

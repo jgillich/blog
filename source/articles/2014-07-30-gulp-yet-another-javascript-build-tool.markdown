@@ -1,5 +1,4 @@
 ---
-layout: post
 title: Gulp, Yet Another JavaScript Build Tool
 date: 2014-07-30
 ---

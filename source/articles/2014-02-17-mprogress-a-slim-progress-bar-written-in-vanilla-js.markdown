@@ -1,5 +1,4 @@
 ---
-layout: post
 title: MProgress, a slim progress bar written in Vanilla JS
 date: 2014-02-17
 ---

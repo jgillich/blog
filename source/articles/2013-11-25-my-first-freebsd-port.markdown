@@ -1,5 +1,4 @@
 ---
-layout: post
 title: My First FreeBSD Port
 date: 2013-11-25
 ---

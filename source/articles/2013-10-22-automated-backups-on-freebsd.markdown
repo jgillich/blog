@@ -1,5 +1,4 @@
 ---
-layout: post
 title: Automated Backups on FreeBSD
 date: 2013-10-22
 ---

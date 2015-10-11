@@ -1,5 +1,4 @@
 ---
-layout: post
 title: Ghost on FreeBSD
 date: 2013-10-14
 ---

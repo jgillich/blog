@@ -1,5 +1,4 @@
 ---
-layout: post
 title: StartSSL & Heartbleed
 date: 2014-04-09
 ---

@@ -1,5 +1,4 @@
 ---
-layout: post
 title: How To Install Redmine on CentOS 7
 date: 2014-08-14
 ---
