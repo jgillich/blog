@@ -8,7 +8,7 @@ As a regular listener of the Linux Action Show and similar shows JB produces,
 I've always known video production on Linux isn't the best experience ever.
 Never would I have imagined how bad things really are.
 
-I have a really simple task. Record a video, add a few titles, done. Doesn't sound hard,
+I had a really simple task. Record a video, add a few titles, done. Doesn't sound hard,
 does it? Well, apparently it is - on Linux. I tried pretty much all editing software
 that is available:
 
