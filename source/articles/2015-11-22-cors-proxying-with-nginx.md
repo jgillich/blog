@@ -1,5 +1,5 @@
 ---
-title: CORS proxying with nginx
+title: CORS Proxying with nginx
 date: 2015-11-22
 ---
 

@@ -34,7 +34,7 @@ set :casper, {
   blog: {
     url: 'https://jakobgillich.com',
     name: 'Jakob Gillich',
-    description: 'Just a blog.',
+    description: 'Software sucks, let\'s write some more',
     date_format: '%d %B %Y',
     navigation: true,
     logo: nil # Optional
