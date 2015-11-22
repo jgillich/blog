@@ -21,10 +21,10 @@ dev environment so much more secure:
           return 204;
         }
 
-        more_set_headers 'Access-Control-Allow-Origin' '*';
-        more_set_headers 'Access-Control-Allow-Credentials' 'true';
-        more_set_headers 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
-        more_set_headers 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Typ';
+        add_header 'Access-Control-Allow-Origin' '*' always;
+        add_header 'Access-Control-Allow-Credentials' 'true' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Typ' always;
 
         proxy_redirect off;
         proxy_set_header Host $host;
