@@ -1,0 +1,9 @@
+baseurl = "https://jakob.gillich.me/"
+languageCode = "en-us"
+title = "Jakob Gillich"
+theme = "hyde"
+
+
+[params]
+description = "Another hipster dev blog"
+copyright = " "

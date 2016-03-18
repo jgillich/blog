@@ -1,12 +1,12 @@
-language: ruby
-script: bundle exec middleman build
-sudo: false
+language: go
+install: curl -L https://github.com/spf13/hugo/releases/download/v0.15/hugo_0.15_linux_amd64.tar.gz | tar --strip 1 -xz
+script: ./hugo_0.15_linux_amd64
 after_success: |
   export PATH=$HOME/.local/bin:$PATH &&
   [ $TRAVIS_BRANCH = master ] &&
   [ $TRAVIS_PULL_REQUEST = false ] &&
   pip install ghp-import --user `whoami` &&
-  ghp-import -n build &&
+  ghp-import -n public &&
   git push -fq https://${TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages
 env:
   global:

@@ -1,7 +1,6 @@
 ---
 title: Using GitHub Pages and Travis for automatically deployed web sites
-date: 2015-10-11 16:13 UTC
-tags:
+date: 2015-10-11
 ---
 
 Due to some issues with upgrading my Ghost installation, and considering that I'm

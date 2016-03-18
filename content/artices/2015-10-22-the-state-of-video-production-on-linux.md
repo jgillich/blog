@@ -1,7 +1,6 @@
 ---
 title: The state of video production on Linux
-date: 2015-10-22 21:55 UTC
-tags:
+date: 2015-10-22
 ---
 
 As a regular listener of the Linux Action Show and similar shows JB produces,
