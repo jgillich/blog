@@ -39,7 +39,6 @@ usual channels - right? Wrong! This is where things get really interesting: Nix
 has packages for pretty much all databases, and nix-shell allows us to run
 custom commands when we enter a shell. This property is called `shellHook`:
 
-with import <nixpkgs> { };
 ```
 rustPlatform.buildRustPackage rec {
   name = "my-project-${version}";
