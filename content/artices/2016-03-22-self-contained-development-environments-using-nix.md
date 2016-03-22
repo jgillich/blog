@@ -34,7 +34,7 @@ clean state, which we don't really want during development. So instead, we do
 `pkgconfig`, but also all dependencies of `rustPlatform`, like `rustc` and
 `cargo`.
 
-Now, what if we need a database? Well, you have to install that through the
+Now, what if we need a database? Well, we'd have to install that through the
 usual channels - right? Wrong! This is where things get really interesting: Nix
 has packages for pretty much all databases, and nix-shell allows us to run
 custom commands when we enter a shell. This property is called `shellHook`:
@@ -49,7 +49,7 @@ rustPlatform.buildRustPackage rec {
 }
 ```
 
-This would start a CouchDB database every time we enter our development
+This would start CouchDB every time we enter our development
 environment. And if you're still using Make to run your build commands, consider
 specifying them in your `shellHook` instead:
 
