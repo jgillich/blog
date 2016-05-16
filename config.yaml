@@ -1,16 +1,21 @@
 baseurl: "https://jakob.gillich.me/"
 languageCode: "en-us"
 title: "Jakob Gillich"
-theme: "hyde"
-
+theme: "slender"
+author:
+  name: "Jakob Gillich"
+permalinks:
+  post = "/:title/"
+params:
+  tagline: "Another hipster dev blog"
+  footer: "All content licensed under [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/)."
+  colorscheme: "black"
+  email: "mailto:jakob@gillich.me"
+  github: "https://github.com/jgillich"
+  stackoverflow: "http://stackoverflow.com/users/941764/jgillich"
 menu:
   main:
-    - name: "GitHub"
-      weight: -110
-      identifier: "gh"
-      url: "https://github.com/jgillich"
-
-
-params:
-  description: "Another hipster dev blog"
-  copyright: " "
+    - identifier: "home"
+      name: "home"
+      url: "/"
+      weight: 0
