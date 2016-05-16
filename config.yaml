@@ -1,0 +1,16 @@
+baseurl: "https://jakob.gillich.me/"
+languageCode: "en-us"
+title: "Jakob Gillich"
+theme: "hyde"
+
+menu:
+  main:
+    - name: "GitHub"
+      weight: -110
+      identifier: "gh"
+      url: "https://github.com/jgillich"
+
+
+params:
+  description: "Another hipster dev blog"
+  copyright: " "
