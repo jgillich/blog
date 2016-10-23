@@ -8,14 +8,11 @@ permalinks:
   post = "/:title/"
 params:
   tagline: "Personal blog"
+  description: "Minimalist, developer."
   footer: "All content licensed under [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/)."
-  colorscheme: "black"
   email: "mailto:jakob@gillich.me"
-  Github:
-    Url: "https://github.com/jgillich"
-    Head: Master
+  github: "https://github.com/jgillich"
   stackoverflow: "http://stackoverflow.com/users/941764/jgillich"
-  DateForm: "Jan 2 2006"
 menu:
   main:
     - identifier: "home"
