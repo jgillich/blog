@@ -5,8 +5,8 @@ date: 2016-10-23
 
 If there is one thing the TypeScript people should to improve, it's documentation.
 I just went through a small oddysee trying to convert a project to TypeScript
-2.0 and the new way of getting definition files. Hint: Look at how Rust does
-documentation.
+2.0 and the new way of getting definition files. Hint: Look at how the Rust
+project does documentation.
 
 ### Updating TypeScript
 

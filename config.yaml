@@ -1,18 +1,21 @@
 baseurl: "https://jakob.gillich.me/"
 languageCode: "en-us"
 title: "Jakob Gillich"
-theme: "slender"
+theme: "lanyon"
 author:
   name: "Jakob Gillich"
 permalinks:
   post = "/:title/"
 params:
-  tagline: "Another hipster dev blog"
+  tagline: "Personal blog"
   footer: "All content licensed under [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/)."
   colorscheme: "black"
   email: "mailto:jakob@gillich.me"
-  github: "https://github.com/jgillich"
+  Github:
+    Url: "https://github.com/jgillich"
+    Head: Master
   stackoverflow: "http://stackoverflow.com/users/941764/jgillich"
+  DateForm: "Jan 2 2006"
 menu:
   main:
     - identifier: "home"
