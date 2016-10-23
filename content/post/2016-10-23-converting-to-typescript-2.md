@@ -29,12 +29,14 @@ After installing all typings that way, remove the reference path to the old
 definitions, try to build and get a trillion errors. First, we have to tell
 TypeScript that we're using node modules:
 
-  // tsconfig.json
-  {
-    "compilerOptions": {
-      "moduleResolution": "node"
-    }
+```
+// tsconfig.json
+{
+  "compilerOptions": {
+    "moduleResolution": "node"
   }
+}
+```
 
 Now, you might actually be able to compile. Unless you're using any global
 non-standard functions like `require` or core-js shims. Remember that you
@@ -43,14 +45,16 @@ longer necessary, but this also means TypeScript has no idea what typings are
 available. When you `import` something, they are loaded automatically, but if
 something should always be loaded, you need to configure that:
 
-  // tsconfig.json
-  {
-    "compilerOptions": {
-      "types": [
-        "node", "mocha", "core-js"
-      ]
-    }
+```
+// tsconfig.json
+{
+  "compilerOptions": {
+    "types": [
+      "node", "mocha", "core-js"
+    ]
   }
+}
+```
 
 Done, now your project should work as usual and with one less tool required.
 This wasn't actually hard, was it? It still took me around an hour to figure
