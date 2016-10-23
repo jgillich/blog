@@ -7,9 +7,9 @@
 
   <title>
     {{ if eq .URL "/" }}
-      {{ .Site.Params.Title }} &middot; {{ .Site.Params.Tagline }}
+      {{ .Site.Title }} &middot; {{ .Site.Params.tagline }}
     {{ else }}
-      {{ .Title }} &middot; {{ .Site.Params.Title }}
+      {{ .Title }} &middot; {{ .Site.Title }}
     {{ end }}
   </title>
 
