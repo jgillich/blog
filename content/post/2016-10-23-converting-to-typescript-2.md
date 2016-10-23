@@ -27,8 +27,8 @@ are no longer needed. Installation goes like this:
 
 All DefinitelyTyped definitions are available, so you might as well do this now.
 After installing all typings, remove the reference path to the old definitions,
-try to build and observe how TypeScript cannot resolve a single mdule. First, we
-have to tell TypeScript that we're using node modules:
+try to build and observe how TypeScript cannot resolve a single module. First,
+we have to tell TypeScript that we're using node modules:
 
     // tsconfig.json
     {
