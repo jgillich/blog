@@ -14,9 +14,9 @@ Go into your `package.json`, set TypeScript to version `2.something` and run
 `npm install`. Done. Try to compile your project, it probably won't because the
 compiler is a bit more strict. The error messages however should give you an
 idea what needs to be changed, go and fix your code. Visual Studio Code uses
-the globally installed TypeScript version, update that one as well
-(`npm install -g` - yes, not update, don't ask why. I make this mistake every.
-single. time.).
+the globally installed TypeScript version, update that one as well by running
+`npm install -g` - yes, not update, don't ask why. I make this mistake every.
+single. time.
 
 ### Use @types
 
