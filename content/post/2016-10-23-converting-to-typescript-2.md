@@ -21,13 +21,14 @@ single. time.).
 ### Use @types
 
 You can now install type definitions via npm, typings/tsd
-are no longer needed. The syntax looks like this:
+are no longer needed. Installation goes like this:
 
     npm install --save @types/react
 
-After installing all typings that way, remove the reference path to the old
-definitions, try to build and get a trillion errors. First, we have to tell
-TypeScript that we're using node modules:
+All DefinitelyTyped definitions are available, so you might as well do this now.
+After installing all typings, remove the reference path to the old definitions,
+try to build and observe how TypeScript cannot resolve a single mdule. First, we
+have to tell TypeScript that we're using node modules:
 
     // tsconfig.json
     {
