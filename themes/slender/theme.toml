@@ -1,0 +1,19 @@
+# theme.toml
+
+name = "Slender-next"
+license = "MIT"
+licenselink = "https://github.com/overvenus/slender-next/blob/master/LICENSE.md"
+description = "Yet another sample theme for Hugo with base16 color schemes."
+homepage = ""
+tags = ["hugo", "blog", "slender", "slender-next"]
+features = ["blog"]
+min_version = 0.14
+
+[author]
+  name = "Neil Shen"
+  homepage = "https://github.com/overvenus/"
+
+[original]
+  name = "CrimsonRay"
+  homepage = "https://crimsonray.github.io/slender/"
+  repo = "https://github.com/CrimsonRay/"

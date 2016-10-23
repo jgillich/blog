@@ -1,0 +1,12 @@
+{{ partial "header.html" . }}
+{{ partial "toc.html" . }}
+<article class="article-content">
+    {{ .Content }}
+</article>
+<div class="article-tags">
+    <!--<i class="fa fa-tags fa-fw"></i>-->
+    {{ partial "tags/tags.html" . }}
+</div>
+{{ partial "mathjax.html" . }}
+{{ partial "comment.html" . }}
+{{ partial "footer.html" . }}
