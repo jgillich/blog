@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Jakob Gillich &middot; Personal blog
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Minimalist, developer. <a href="mailto:jakob@gillich.me">Say hi</a></p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item  active " href="/">Home</a>
+    <a class="sidebar-nav-item " href="/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item">
+    <p>All content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Jakob Gillich</a>
+            <small>Personal blog</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+
+
+
+<div class="posts">
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2016-10-23-converting-to-typescript-2/">Converting a project to TypeScript 2.0</a></h1>
+        <span class="post-date">Oct 23 2016</span>
+        
+
+<p>If there is one thing the TypeScript people should to improve, it&rsquo;s documentation.
+I just went through a small Odyssey trying to convert a project to TypeScript
+2.0 and the new way of getting definition files. Hint: Look at how the Rust
+project does documentation.</p>
+
+<h3 id="updating-typescript:2aa5e8d3cfed7ab91aaad0c939bfae88">Updating TypeScript</h3>
+
+<p>Go into your <code>package.json</code>, set TypeScript to version <code>2.something</code> and run
+<code>npm install</code>. Done. Try to compile your project, it probably won&rsquo;t because the
+compiler is a bit more strict. The error messages however should give you an
+idea what needs to be changed, go and fix your code. Visual Studio Code uses
+the globally installed TypeScript version, update that one as well by running
+<code>npm install -g</code> - yes, not update, don&rsquo;t ask why. I make this mistake every.
+single. time.</p>
+
+<h3 id="use-types:2aa5e8d3cfed7ab91aaad0c939bfae88">Use @types</h3>
+
+<p>You can now install type definitions via npm, typings/tsd
+are no longer needed. Installation goes like this:</p>
+
+<pre><code>npm install --save @types/react
+</code></pre>
+
+<p>All DefinitelyTyped definitions are available, so you might as well do this now.
+After installing all typings, remove the reference path to the old definitions,
+try to build and observe how TypeScript cannot resolve a single module. First,
+we have to tell TypeScript that we&rsquo;re using node modules:</p>
+
+<pre><code>// tsconfig.json
+{
+  &quot;compilerOptions&quot;: {
+    &quot;moduleResolution&quot;: &quot;node&quot;
+  }
+}
+</code></pre>
+
+<p>Now, you might actually be able to compile. Unless you&rsquo;re using any global
+non-standard functions like <code>require</code> or core-js shims. Remember that you
+had to explicitly load typings using the reference path before? This is no
+longer necessary, but this also means TypeScript has no idea what typings are
+available. When you <code>import</code> something, they are loaded automatically, but if
+something should always be loaded, you need to configure that:</p>
+
+<pre><code>// tsconfig.json
+{
+  &quot;compilerOptions&quot;: {
+    &quot;types&quot;: [
+      &quot;node&quot;, &quot;mocha&quot;, &quot;core-js&quot;
+    ]
+  }
+}
+</code></pre>
+
+<p>Done, now your project should work as usual and with one less tool required.
+This wasn&rsquo;t actually hard, was it? It still took me around an hour to figure
+out, which could&rsquo;ve been prevented by a simple mention of these things in the
+release announcement or elsewhere (search the title of this post, there is
+zero documentation about this).</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2016-05-14-bhyve/">Getting started with bhyve</a></h1>
+        <span class="post-date">May 14 2016</span>
+        <p>I&rsquo;ve been running a home server for a few years, but my upload is just too poor to
+do anything serious with it, so I got myself a cheap dedicated server. Installed
+FreeBSD, because lets try bhyve, their new-ish hypervisor.</p>
+
+<p>The default &ldquo;frontend&rdquo; to bhyve is quite complex, so I used <a href="https://github.com/churchers/vm-bhyve">vm-bhyve</a>
+instead, which can definitely compete with Docker in ease of use.</p>
+
+<p>So let&rsquo;s install it. It is in ports, but the package usually outdated, so
+make sure you install from source.</p>
+
+<pre><code># if you don't have the ports tree yet
+portsnap fetch extract
+cd /usr/ports/sysutils/vm-bhyve &amp;&amp; make install clean
+</code></pre>
+
+<p>If you plan to run anything other than FreeBSD, you&rsquo;ll also need <code>grub2-bhyve</code>:</p>
+
+<pre><code>cd /usr/ports/sysutils/grub2-bhyve &amp;&amp; make install clean
+</code></pre>
+
+<p>Some initial config:</p>
+
+<pre><code>mkdir /var/vm
+zfs create -o mountpoint=/var/vm zroot/vm
+echo 'vm_enable=&quot;YES&quot;' &gt;&gt; /etc/rc.conf
+echo 'vm_dir=&quot;zfs:zroot/vm&quot;' &gt;&gt; /etc/rc.conf
+vm init
+cp /usr/local/share/examples/vm-bhyve/* /var/vm/.templates/
+</code></pre>
+
+<p>This is enough to be able to launch VMs, but we want networking as well.</p>
+
+<pre><code>echo 'net.inet.ip.forwarding=1' &gt;&gt; /etc/sysctl.conf
+echo 'pf_enable=&quot;YES&quot;' &gt;&gt; /etc/rc.conf
+vm switch create public
+vm switch add public em0
+vm switch nat public on
+pkg install dnsmasq
+echo 'dnsmasq_enable=&quot;YES&quot;' &gt;&gt; /etc/rc.conf
+mv /usr/local/etc/dnsmasq.conf.bhyve /usr/local/etc/dnsmasq.conf
+service dnsmasq start
+</code></pre>
+
+<p>vm-bhyve will add a include line to <code>/etc/pf.conf</code>, you might
+have to move it up a bit (check with <code>pfctl -f /etc/pf.conf</code>).</p>
+
+<p>Now, we need an ISO, which vm-bhyve can download for us:</p>
+
+<pre><code>vm iso ftp://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/ISO-IMAGES/10.3/FreeBSD-10.3-RELEASE-amd64-disc1.iso
+</code></pre>
+
+<p>If you want to download iso manually, just put them in <code>/var/vm/.iso/</code>.
+Let&rsquo;s launch a VM:</p>
+
+<pre><code>vm create -t freebsd-zpool -s 50G freebsd1
+vm install freebsd1 FreeBSD-10.3-RELEASE-amd64-disc1.iso
+vm console freebsd1
+</code></pre>
+
+<p>Now, just go through the installer as usual. Easy!</p>
+
+<p>Next step: figure out how to assign IPv6 addresses to VMs.
+Hopefully not too hard.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2016-05-10-this-week-in-cloudfm-1/">This Week in CloudFM 1</a></h1>
+        <span class="post-date">May 10 2016</span>
+        
+
+<p>or: How to implement XML parsing in just 500 lines of Rust.</p>
+
+<p>A weekly blog about my progress on CloudFM, a offline-first, multi-backend music player.</p>
+
+<p>Not the best start for a series like this, but last week my SDD died. Then I wasted
+an entire evening trying to install OpenSuse Tumbleweed (something something SecureBoot).
+Bottom line, I did some stuff, but not even close to what I wanted to achieve.</p>
+
+<h3 id="what-s-new:7ed19aeb5264e5103fe0af8507672bd5">What&rsquo;s new</h3>
+
+<ul>
+<li><p><a href="https://github.com/jgillich/hyperdav">hyperdav</a> got all required functionality.
+I&rsquo;m not particularly proud about the code, especially the response parsing using
+xml-rs is extremely verbose, even though like 90% of the body is ignored anyway.
+Maybe real xml support in serde will happen one day.</p></li>
+
+<li><p>WebDAV indexing is now implemented. This change broke some parts of the app, since
+the URI format has changed to now always include the backend id.</p></li>
+
+<li><p>All components are now dockerized. I want to do some form of automated deployment
+soon-ish. Not because it makes sense right now, but because playing with ops stuff
+is fun.</p></li>
+</ul>
+
+<h3 id="what-s-next:7ed19aeb5264e5103fe0af8507672bd5">What&rsquo;s next</h3>
+
+<p>In case my notebook decides to explode tomorrow, let&rsquo;s set the goals a bit lighter:</p>
+
+<ul>
+<li>Make the web app usable for everyday listening - same as last week</li>
+<li>Implement the UI to add ownCloud/Box.com backends, which will be
+stored as webdav behind the scenes</li>
+</ul>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2016-05-03-cloudfm/">CloudFM</a></h1>
+        <span class="post-date">May 3 2016</span>
+        
+
+<p>Over the last few months, I&rsquo;ve been working on a next-generation music player
+for the age of &ldquo;servers connected to the internet&rdquo;, also known as the &ldquo;cloud&rdquo;.
+Because I am bad at naming things, I called it <a href="https://github.com/cloudfm/cloudfm">CloudFM</a>.</p>
+
+<p>You don&rsquo;t actually need to click the link, because there&rsquo;s nothing to see there.
+I&rsquo;m mainly putting this out there because I want to regularly share progress
+I&rsquo;ve made. But let&rsquo;s start with what I&rsquo;ve done so far.</p>
+
+<h3 id="why-i-m-doing-this:bfc9e93011646c659275950cfe33bd5a">Why I&rsquo;m doing this</h3>
+
+<p>Long story short, I loved Rdio, then Rdio shut down. Turns out the alternatives
+aren&rsquo;t as good as Rdio and a lot of them even require Flash (2016??).
+I switched to Subsonic, which works ok, but Rdio was just so much better in so
+many ways. So I&rsquo;m building my own thing instead.</p>
+
+<p>CloudFM is a music player that integrates a plethora of cloud services
+(think Spotify, YouTube, Dropbox, SoundCloud and more) into a single player
+interface. Since mobile internet is expensive and not always available, I want
+to make it offline-capable as much as possible. And nowadays, you have so much
+storage space on your phone, meanwhile your tiny SSD on your notebook
+is constantly running out of space - CloudFM will let you store your music
+on your phone, and listen to it on your desktop.</p>
+
+<h3 id="micro-services-written-in-rust:bfc9e93011646c659275950cfe33bd5a">Micro-services written in Rust</h3>
+
+<p>To be honest, I did not intend to use a micro-service architecture from the start.
+I actually wrote a monolithic server first, until I realized: I&rsquo;m going to
+need a lot of this code at different places. For example, indexing code will
+have to run on the server side, but also as part of a GUI desktop app. That is
+why I turned my server into a library that compiles to a couple of binaries:</p>
+
+<ul>
+<li><code>indexd</code>: The indexing daemon, it indexes music from various online services (and local files).</li>
+<li><code>proxyd</code>: Give it a track ID, it will respond with a audio file, not matter where
+it is stored. In the future, it will also do things like on the fly re-encoding
+of files, and more.</li>
+<li><code>manager</code>: A desktop app, to index and serve local files. Will probably use the
+excellent GTK bindings for Rust. Or maybe the Qt Quick bindings, because
+GTK isn&rsquo;t actually that great on platforms other than Linux. Ideally, both.</li>
+</ul>
+
+<h3 id="web-app-written-in-typescript-react-redux:bfc9e93011646c659275950cfe33bd5a">Web app written in TypeScript/React/Redux</h3>
+
+<p>Initially, I started writing it in Elm. It was an interesting experiment,
+and there are a lot of things I like about the language, but the cons didn&rsquo;t
+quite outweight the pros. The short version: The language has a few shortcomings
+even in its domain (web apps), the ecosystem is rather small, integrating
+existing JavaScript libraries and APIs is a lot of work.</p>
+
+<p>Searching for an alternative, I decided to use TypeScript first. I treat it
+as a very powerful linter, if your code passes the linter (compiles), it&rsquo;s
+very likely correct. Less edit-tab-reload-tab-edit, more instant feedback
+through your editor. While the type system is not as good as Rust&rsquo;s, and Redux
+is not very TypeScript-friendly, I do not regret it at all, partially because of
+the awesome TypeScript integration in Visual Studio Code.</p>
+
+<p>Choosing a front-end framework was a really straightforward process: I knew
+I wanted a native mobile app, because hybrid apps just aren&rsquo;t that great. And
+since we bascially require PouchDB for offline availability of the database,
+React and React Native are pretty much the only viable option. Together with
+Redux, we&rsquo;ve got a pretty nice and Elm-like stack with a big ecosystem.</p>
+
+<h3 id="what-works:bfc9e93011646c659275950cfe33bd5a">What works</h3>
+
+<p>It&rsquo;s been a bit over a week since I started rewriting the web app, and
+here&rsquo;s what it looks like:</p>
+
+<p><img src="/images/cloudfm.png" alt="" /></p>
+
+<p>This is just a very early prototype, expect things to change, a lot. A lot
+of the features you&rsquo;d expect from any player aren&rsquo;t there, yet. The design
+will also definitely change in the future.</p>
+
+<p>What&rsquo;s not visible on the screenshot is that the music is not just local, but
+also from Jamendo. In the future, a lot more backends will follow.</p>
+
+<h3 id="what-s-next:bfc9e93011646c659275950cfe33bd5a">What&rsquo;s next</h3>
+
+<p>My goals for this week:</p>
+
+<ul>
+<li>Continue work on my WebDAV client for Rust and then implement the WebDAV backend</li>
+<li>Make the web app usable for everyday listening</li>
+<li>Start working on a Musicbrainz client</li>
+<li>Read Design for Hackers</li>
+</ul>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2016-03-28-jamendo-rs/">jamendo-rs</a></h1>
+        <span class="post-date">Mar 28 2016</span>
+        <p>I wrote a <a href="https://github.com/jgillich/jamendo-rs">Jamendo API client in Rust</a>
+today. And it was easy.</p>
+
+<p>Yes, Rust is quite hard to learn. But after you&rsquo;ve grasped the concepts it&rsquo;s
+built around, like ownership and lifetimes, it all makes sense. Unlike
+JavaScript, which never made any sense.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2016-03-26-including-npm-modules-in-typescript/">Including npm modules in TypeScript</a></h1>
+        <span class="post-date">Mar 26 2016</span>
+        <p>I&rsquo;ve written quite a lot JavaScript and Node.js code over the last few years.
+Unlike many, I think it&rsquo;s a great language and server platform. However, the
+lack of static types does regularly introduce errors that are hard to find.
+That&rsquo;s why I decided to use <a href="http://typescriptlang.org/">TypeScript</a> for a new
+project.</p>
+
+<p>The website describes it as a <em>superset</em> of JavaScript, with typings being
+optional. I was quite surprised to find out this is not true, at all. I started
+by installing TypeScript, a webpack loader, and react with npm. Now, we should
+be able to do this:</p>
+
+<pre><code>import * as React from &quot;react&quot;;
+</code></pre>
+
+<pre><code>ERROR in ./src/main.ts
+(2,24): error TS2307: Cannot find module 'react'.
+</code></pre>
+
+<p>Uh, what? I just installed it, why can&rsquo;t the compiler find it? After doing a bit
+of reading (the official docs are severely lacking in that regard, I have to
+say), I found out that typings are actually not optional. There are two
+solutions:</p>
+
+<ol>
+<li><p>Install the <code>require</code> typings and load modules with <code>require()</code>. This works
+because the typings for <code>require</code> define it as returning <code>any</code>, therefore
+disabling all type checks for it.</p></li>
+
+<li><p>Install the typings for <code>react</code>. This is the recommended approach, however
+the typings have to be created by hand, therefore they don&rsquo;t exist for all
+modules.</p></li>
+</ol>
+
+<p>How do you install typings, you might ask. There is a project with the same
+name that provides a package manager for them, similar to npm. Install it
+via <code>npm install -g typings</code>, then you can install type definitions using
+<code>typings install react --save --ambient</code>. <code>--save</code> stores them in the
+<code>typings.json</code>, which is like your <code>package.json</code> but for typings. <code>--ambient</code>
+is required for modules that export to the global namespace - I don&rsquo;t yet
+know why it&rsquo;s required for <code>react</code>, only that it won&rsquo;t work without.</p>
+
+<p>After you&rsquo;ve installed them, you need to add one special line to the top of
+your code:</p>
+
+<pre><code>/// &lt;reference path='../typings/browser.d.ts'/&gt;
+</code></pre>
+
+<p>The path is relative from your source file and tells TypeScript to load
+the definitions that you&rsquo;ve installed via <code>typings</code>. Note that <code>browser.d.ts</code>
+is for browser projects, if you target Node.js, use <code>main.d.ts</code> instead.</p>
+
+<p>Initially, I also had issues with multiple definitions. This is because
+TypeScript, by default, loads all <code>.ts</code> files. What we usually want is just a
+single file that includes the rest of our code. To fix this, we need to create
+a <code>tsconfig.json</code> in our project root:</p>
+
+<pre><code>{
+  &quot;files&quot;: [
+    &quot;src/main.ts&quot;
+  ]
+}
+</code></pre>
+
+<p>Now, finally, we are able to use React from TypeScript. I feel like there is a
+lot that needs to be improved here, starting with the compiler error message.</p>
+
+<p>Now, what if there are no typings for the module you&rsquo;d like to use? As I
+mentioned earlier, you can use <code>require()</code> to completely bypass type checks
+by installing the typings for it and then doing:</p>
+
+<pre><code>import h = require('react-hyperscript-helpers');
+</code></pre>
+
+<p>Unfortunately, this is not possible with ES6 modules, so we don&rsquo;t get the
+ability to destructure during import. I think that creating typings is what you
+should be doing instead, that&rsquo;s why you&rsquo;re using TypeScript in the first
+place, right?</p>
+
+<p>The <a href="http://www.typescriptlang.org/docs/handbook/writing-definition-files.html">Handbook</a>
+tells you how to do it, here&rsquo;s just a quick example, my <code>react-hyperscript-helpers.d.ts</code>:</p>
+
+<pre><code>declare namespace ReactHyperscriptHelpers {
+  function h1(text: string): any;
+}
+
+declare module &quot;react-hyperscript-helpers&quot; {
+  export = ReactHyperscriptHelpers;
+}
+</code></pre>
+
+<p>As you can see, it defines a single function <code>h1</code> that takes a <code>string</code> and
+returns <code>any</code>. Now, we can do this:</p>
+
+<pre><code>/// &lt;reference path='./react-hyperscript-helpers.d.ts'/&gt;
+import { h1 } from &quot;react-hyperscript-helpers&quot;;
+
+ReactDOM.render(
+  h1('Hello, World!'),
+  document.body
+);
+</code></pre>
+
+<p>I don&rsquo;t think it ever took me longer to get a Hello World up and running.
+Microsoft, please make this stuff easier to get started with.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2016-03-22-self-contained-development-environments-using-nix/">Self-contained development environments using Nix</a></h1>
+        <span class="post-date">Mar 22 2016</span>
+        <p>Nix is a package manager that works a bit differently. It allows you to install
+any version of any package alongside each other. Since you can&rsquo;t, for example,
+have multiple <code>python</code> executables, <code>nix-shell</code> is used to give you a
+environment with all the dependencies you need.</p>
+
+<p>Let&rsquo;s say you have a Rust project. You create a <code>default.nix</code> in your project
+directory:</p>
+
+<pre><code>with import &lt;nixpkgs&gt; { };
+
+rustPlatform.buildRustPackage rec {
+  name = &quot;my-project-${version}&quot;;
+  version = &quot;0.1&quot;;
+  src = ./.;
+  buildInputs = [ openssl pkgconfig ];
+  depsSha256 = &quot;160ar8jfzhhrg5rk3rjq3sc5mmrakysynrpr4nfgqkbq952il2zk&quot;;
+}
+</code></pre>
+
+<p>This defines a Rust package in the current directory, with the <code>openssl</code>
+dependency. Note that <code>buildInputs</code> only lists native dependencies, your
+crates are specified in your <code>Cargo.toml</code> as usual.</p>
+
+<p>To build a package out of this, you can run <code>nix-build default.nix</code>
+(or just <code>nix-build .</code>). However, this will always build the project from a
+clean state, which we don&rsquo;t really want during development. So instead, we do
+<code>nix-shell .</code>, which puts us in a new shell that not only has <code>openssl</code> and
+<code>pkgconfig</code>, but also all dependencies of <code>rustPlatform</code>, like <code>rustc</code> and
+<code>cargo</code>.</p>
+
+<p>Now, what if we need a database? Well, we&rsquo;d have to install that through the
+usual channels - right? Wrong! This is where things get really interesting: Nix
+has packages for pretty much all databases, and nix-shell allows us to run
+custom commands when we enter a shell. This property is called <code>shellHook</code>:</p>
+
+<pre><code>rustPlatform.buildRustPackage rec {
+  name = &quot;my-project-${version}&quot;;
+  // ...
+  shellHook = ''
+    ${couchdb}/bin/couchdb -a couchdb.ini &amp;
+  '';
+}
+</code></pre>
+
+<p>This would start CouchDB every time we enter our development
+environment. And if you&rsquo;re still using Make to run your build commands, consider
+specifying them in your <code>shellHook</code> instead:</p>
+
+<pre><code>shellHook = ''
+  function ci {
+    cargo build
+    cargo test
+  }
+'';
+</code></pre>
+
+<p>You can of course use Nix on your continuous integration platform, like Travis,
+by setting the <code>script</code> to:</p>
+
+<pre><code>nix-shell default.nix --command ci
+</code></pre>
+
+<p>By using Nix, the environment on Travis is exactly the same as the one you use
+locally. No longer will you have issues because Travis hasn&rsquo;t updated their
+sqlite version in the last 5 years.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2016-03-18-another-year-another-static-site-generator/">Another Year, Another Static Site Generator</a></h1>
+        <span class="post-date">Mar 18 2016</span>
+        <p>This year&rsquo;s hotness: <a href="http://gohugo.io/">Hugo</a>. Being the web hipster that I am,
+of course I switched. Not that I didn&rsquo;t have a good reason, I had already
+written two or three posts with Middleman, so it felt really old and used.</p>
+
+<p>On a serious note, Middleman does feel a bit limiting when you build more
+complex sites with it. But maybe using static site generators for anything other
+than simple blogs and documentation is just a bad idea. It&rsquo;s certainly a lot
+better than Jekyll and its awful Liquid templating syntax.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2015-11-22-cors-proxying-with-nginx/">CORS Proxying with nginx</a></h1>
+        <span class="post-date">Nov 22 2015</span>
+        <p>CORS is a very advanced security technology designed to waste your time. It works for production environments,
+but oh Firefox can I please just send some requests to that API to test
+my app? The answer is no, so this is how to configure nginx and make your local
+dev environment so much more secure:</p>
+
+<pre><code>server {
+  listen 8080;
+  location / {
+    if ($request_method = 'OPTIONS') {
+      add_header 'Access-Control-Allow-Origin' '*';
+      add_header 'Access-Control-Allow-Credentials' 'true';
+      add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+      add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Typ';
+      add_header 'Content-Type' 'text/plain charset=UTF-8';
+      add_header 'Content-Length' 0;
+      return 204;
+    }
+
+    add_header 'Access-Control-Allow-Origin' '*' always;
+    add_header 'Access-Control-Allow-Credentials' 'true' always;
+    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+    add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Typ' always;
+
+    proxy_redirect off;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_pass http://127.0.0.1:1234;
+  }
+}
+</code></pre>
+
+<p>To make your life extra difficult, the creators decided you can&rsquo;t use wildcards for <code>Access-Control-Allow-Headers</code>, enjoy changing this config for any new headers you want to use. Oh, and please don&rsquo;t run this in production, please?</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2015-11-14-nixos/">NixOS</a></h1>
+        <span class="post-date">Nov 14 2015</span>
+        
+
+<p>After reading about it so many times, I finally tried
+<a href="https://nixos.org/">NixOS</a>. Never heard of it? Definitely check out their web
+site, but if you&rsquo;re not into functional programming, you probably won&rsquo;t
+understand what it is all about. At least I didn&rsquo;t, until I tried it. And it
+blew my mind. But let me break it down for you.</p>
+
+<h2 id="nixos:ef02e7022056e1379c60b64c46d6ae0c">NixOS</h2>
+
+<p>NixOS is basically a regular Linux distro, it runs on the desktop as well as on
+the server. What makes NixOS special is the way it is configured. The entire
+system is based on a single configuration file at
+<code>/etc/nixos/configuration.nix</code>. NixOS configuration uses the Nix programming
+language, having programming knowledge is not required, but makes things easier.
+Nix is also a package manager, but more about that later. Unlike configuration
+management tools like Ansible, there is zero state in the NixOS configuration.
+If you remove a service from your NixOS configuration, it is gone, there is no
+uninstall step.</p>
+
+<p>Traditional configuration management works by checking the system state and
+performing the required actions. For example, installing a service usually goes
+like this:</p>
+
+<ul>
+<li>Manually write the configuration file</li>
+<li>Ensure required packages are installed</li>
+<li>Ensure the configuration is correct</li>
+<li>Ensure the service exists</li>
+<li>Ensure the service is started</li>
+</ul>
+
+<p>On NixOS, you add this to your configuration:</p>
+
+<pre><code>services.syncthing =
+  { enable = true;
+    user = &quot;jakob&quot;;
+  };
+</code></pre>
+
+<ul>
+<li>There is not installation. enable = true; implies that.</li>
+<li>There is no separate configuration, it can be done in the NixOS configuration</li>
+</ul>
+
+<p>If you install something on NixOS, nothing is actually written to paths like
+<code>/usr</code> or <code>/bin</code>. Instead, every package and every service gets its own file
+system structure at <code>/nix/store</code>. The actual system that you are running is made
+of symlinks to these directories (and to each other). Why is this the best thing
+ever? Whenever you change something in your configuration, NixOS creates a new
+copy of your system, again made of links to <code>/nix/store</code>. These copies are
+called profiles, and they occupy almost no space. When ever you&rsquo;ve made an error
+in your configuration, you can just roll back to any previous state. This is
+especially great when you&rsquo;ve made changes that result in you being unable to
+boot, you can simply select a older profile during boot.</p>
+
+<h2 id="nix:ef02e7022056e1379c60b64c46d6ae0c">Nix</h2>
+
+<p>Nix is a package manager and not specific to NixOS, it works on other Linux
+distributions, too. Its syntax is very similar to other package managers,
+installing something is as easy as:</p>
+
+<pre><code>nix-env -i git
+</code></pre>
+
+<p>But of course it&rsquo;s not exactly like other package managers. First of all, it can
+operate in multi-user-mode, which means you don&rsquo;t need root access to install
+software. Just like NixOS, Nix uses profiles and is able to roll back
+installations.</p>
+
+<p>Something that is probably unique to Nix is the ability to override packages and
+to create derivatives. By default, Nix uses binary packages, but you can make
+changes to packages and it will then compile the package with your changes. To
+give you a example, you can use this to create your own version of vim with the
+plugins you need. This means you don&rsquo;t have to manually manage and update
+plugins, Nix can do it for you. These overrides can be done in your system-wide
+configuration or on a per-user basis at <code>~/.nixpks/config.nix</code>.</p>
+
+<p>There is also an incredible amount of packages for NixOS. Often, smaller Linux
+distributions have a hard time maintaining so many packages, but that doesn&rsquo;t
+seem to be the case for Nix. I actually found that there are more packages in
+Nix than there are in Fedora - not based on the raw numbers, but on what I
+use.</p>
+
+<p>Updates in Nix are based on channels, which are just releases, but you can mix
+them without problems. I&rsquo;ve wanted some newer versions of some packages, so I
+downloaded the <a href="https://github.com/NixOS/nixpkgs">nixpkgs</a> repository and ran:</p>
+
+<pre><code>&gt; sudo -s nix-env -i rkt -f ~/devel/nixpkgs/
+replacing old ‘rkt-0.8.0’
+installing ‘rkt-0.10.0’
+</code></pre>
+
+<p>Yes, it&rsquo;s that simple. What is also simple is installing non-free software.
+Nix has packages for all the drivers and Steam, you just need to allow
+them in your config:</p>
+
+<pre><code>nixpkgs.config.allowUnfree = true;
+</code></pre>
+
+<h2 id="problems:ef02e7022056e1379c60b64c46d6ae0c">Problems</h2>
+
+<p>The way NixOS works offers many advantages, but there are problems. Any software
+that relies on standard paths does not work on NixOS. Any bash script that
+uses <code>#!/bin/bash</code> does not work on NixOS. The included packages have all been
+changed to ensure they work, but anything you get from elsewhere might not work.
+Sometimes when you just need to do this one thing, and do it quickly, NixOS can
+get in the way. I personally just use Docker for anything that&rsquo;s not
+Nix-compatible, but I&rsquo;m also working on packaging a few things. This would be a
+valid reason why there are so many packages - packaging is easy, but you need it
+to really get anything working.</p>
+
+<p>I also have to say, there is not a lot of information about NixOS on the web.
+I&rsquo;ve been reading more of the nixpkgs source code than anything else, but that&rsquo;s
+not a bad thing. I feel like it&rsquo;s actually a strong point about Nix, the source
+is easy to understand and it is never outdated. But it is really not a system
+where you can just search for you problem and find the answer in some shitty
+forum.</p>
+
+<p>One example for problems I&rsquo;ve had is setting the GTK+2 theme. It defaults to the
+very ugly Raleigh. But how do you change it? To set the theme, you need to set
+<code>GTK2_RC_FILES</code> to the theme path - which is hard on Nix because the regular
+<code>/usr/share</code> doesn&rsquo;t exist. And there wasn&rsquo;t a single mention of this problem on
+the web - which really surprised me. The solution is, you might have guessed it,
+just a little bit of configuration:</p>
+
+<pre><code>environment.variables =
+  { GTK2_RC_FILES = &quot;${pkgs.gnome_themes_standard}/share/themes/Adwaita/gtk-2.0/gtkrc&quot;; };
+</code></pre>
+
+<p>That being said, there&rsquo;s great documentation that covers a lot of topics.</p>
+
+<h2 id="solutions:ef02e7022056e1379c60b64c46d6ae0c">Solutions</h2>
+
+<p>I love the way the NixOS configuration works.I can write the configuration once
+and deploy it on any machine or even to a <a href="https://nixos.org/releases/nixos/15.09/nixos-15.09.500.4702666/manual/index.html#sec-imperative-containers">container</a>. Or do it the other way around, run the server configuration in a container
+on your workstation.</p>
+
+<p>There is also <a href="https://github.com/NixOS/nixops">nixops</a> to deploy NixOS
+machines to the various cloud providers.</p>
+
+<p>To wrap this up - NixOS is awesome and solves a lot of problems, you should try
+it.</p>
+
+    </div>
+  
+</div>
+
+<div class="pagination">
+  
+  <a class="pagination-item older" href="/page/2/">Older</a>
+  
+
+  
+  <span class="pagination-item newer">Newer</span>
+  
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

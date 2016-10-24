@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Converting a project to TypeScript 2.0 &middot; Jakob Gillich
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Minimalist, developer. <a href="mailto:jakob@gillich.me">Say hi</a></p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="/">Home</a>
+    <a class="sidebar-nav-item " href="/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item">
+    <p>All content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Jakob Gillich</a>
+            <small>Personal blog</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Converting a project to TypeScript 2.0</h1>
+  <span class="post-date">Oct 23 2016</span>
+  
+
+<p>If there is one thing the TypeScript people should to improve, it&rsquo;s documentation.
+I just went through a small Odyssey trying to convert a project to TypeScript
+2.0 and the new way of getting definition files. Hint: Look at how the Rust
+project does documentation.</p>
+
+<h3 id="updating-typescript:2aa5e8d3cfed7ab91aaad0c939bfae88">Updating TypeScript</h3>
+
+<p>Go into your <code>package.json</code>, set TypeScript to version <code>2.something</code> and run
+<code>npm install</code>. Done. Try to compile your project, it probably won&rsquo;t because the
+compiler is a bit more strict. The error messages however should give you an
+idea what needs to be changed, go and fix your code. Visual Studio Code uses
+the globally installed TypeScript version, update that one as well by running
+<code>npm install -g</code> - yes, not update, don&rsquo;t ask why. I make this mistake every.
+single. time.</p>
+
+<h3 id="use-types:2aa5e8d3cfed7ab91aaad0c939bfae88">Use @types</h3>
+
+<p>You can now install type definitions via npm, typings/tsd
+are no longer needed. Installation goes like this:</p>
+
+<pre><code>npm install --save @types/react
+</code></pre>
+
+<p>All DefinitelyTyped definitions are available, so you might as well do this now.
+After installing all typings, remove the reference path to the old definitions,
+try to build and observe how TypeScript cannot resolve a single module. First,
+we have to tell TypeScript that we&rsquo;re using node modules:</p>
+
+<pre><code>// tsconfig.json
+{
+  &quot;compilerOptions&quot;: {
+    &quot;moduleResolution&quot;: &quot;node&quot;
+  }
+}
+</code></pre>
+
+<p>Now, you might actually be able to compile. Unless you&rsquo;re using any global
+non-standard functions like <code>require</code> or core-js shims. Remember that you
+had to explicitly load typings using the reference path before? This is no
+longer necessary, but this also means TypeScript has no idea what typings are
+available. When you <code>import</code> something, they are loaded automatically, but if
+something should always be loaded, you need to configure that:</p>
+
+<pre><code>// tsconfig.json
+{
+  &quot;compilerOptions&quot;: {
+    &quot;types&quot;: [
+      &quot;node&quot;, &quot;mocha&quot;, &quot;core-js&quot;
+    ]
+  }
+}
+</code></pre>
+
+<p>Done, now your project should work as usual and with one less tool required.
+This wasn&rsquo;t actually hard, was it? It still took me around an hour to figure
+out, which could&rsquo;ve been prevented by a simple mention of these things in the
+release announcement or elsewhere (search the title of this post, there is
+zero documentation about this).</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

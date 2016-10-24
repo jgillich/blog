@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      My First FreeBSD Port &middot; Jakob Gillich
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Minimalist, developer. <a href="mailto:jakob@gillich.me">Say hi</a></p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="/">Home</a>
+    <a class="sidebar-nav-item " href="/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item">
+    <p>All content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Jakob Gillich</a>
+            <small>Personal blog</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">My First FreeBSD Port</h1>
+  <span class="post-date">Nov 25 2013</span>
+  
+
+<p>I&rsquo;ve recently created a FreeBSD port for Ghost. Overall, it was a pretty frustrating experience. The biggest issue was that there&rsquo;s just so few resources on the web about it.</p>
+
+<p>Yes, the official documentation is pretty good. But on the other hand, it actually answered very few of my questions. One example: Ports contain a <em>plist</em> file that lists all files that belong to it. There is documentation about it and it also has a section about <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/porters-handbook/plist-dynamic.html">dynamic plists</a>. It tells you when you can use a dynamic plist, but it&rsquo;s missing any instructions on how you actually implement one.</p>
+
+<p>Since FreeBSD is not as popular as Linux, there are <strong>a lot</strong> less forum/blog posts and mailing list entries. You really can&rsquo;t blame FreeBSD for that, but it makes finding solutions a lot harder. That&rsquo;s also one of the reasons why I&rsquo;m writing this.</p>
+
+<p>But there is one thing that has helped me a lot: <strong>Reading other ports</strong>. You will gain a lot from that as most ports are written by experienced contributors. And if you struggle too much, there are a lot of helpful people hanging around on the forums and mailing lists.</p>
+
+<h3 id="challenges:baf6692ef281c767a9a73cb55100b663">Challenges</h3>
+
+<p>There were a few challenges I had to face. Once I even fixed a issue by switching to a fresh jail and abandoning the old. So please - if you are a newbie, use a jail so you don&rsquo;t mess up your production system!</p>
+
+<h4 id="extract-to-subdirectory:baf6692ef281c767a9a73cb55100b663">Extract to Subdirectory</h4>
+
+<p>The Ghost source code is a zip file that contains no sub folder. Doesn&rsquo;t sound like a big deal, right? Actually, it is. If the source code extracts directly into <code>${WRKDIR}</code>, it is pretty hard moving it into <code>${STAGEDIR}</code> without specifying every single file because the latter directory is inside the former.</p>
+
+<p>But this can be solved by using a custom <code>do-extract</code>:</p>
+
+<pre><code>do-extract:
+    ${MKDIR} ${WRKSRC}
+    ${LOCALBASE}/bin/unzip -d ${WRKSRC} ${DISTDIR}/${DISTFILES}
+</code></pre>
+
+<h4 id="set-correct-permissions:baf6692ef281c767a9a73cb55100b663">Set correct permissions</h4>
+
+<p>After extracting the files, they were set to <code>100</code>. Not very useful, but using <code>@mode 755</code> in the <code>plist</code> fixed it. You can also use <code>@owner somebody</code> and <code>@group somegroup</code> if you want to.</p>
+
+<h4 id="dynamic-plist:baf6692ef281c767a9a73cb55100b663">Dynamic plist</h4>
+
+<p>Implementing a dynamic plist wasn&rsquo;t that hard. You simply need to specify <code>PLIST= ${WRKDIR}/plist</code> and then generate this file in the <code>pre-install</code> target like this:</p>
+
+<pre><code>cd ${WRKSRC}; ${FIND} . -type f | cut -c2- \
+    | ${SED} 's|^|www/ghost|' \
+    | ${SORT} -r &gt;&gt; ${PLIST}
+${ECHO_CMD} &quot;@comment directories&quot; &gt;&gt; ${PLIST}
+cd ${WRKSRC}; ${FIND} . -type d | cut -c2- \
+    | ${SED} 's|^|@dirrm www/ghost|' \
+    | ${SORT} -r &gt;&gt; ${PLIST}
+</code></pre>
+
+<p>This uses find to get a list of files, corrects the path and appends them to the plist. That&rsquo;s all you have to do.</p>
+
+<h3 id="learn-from-me:baf6692ef281c767a9a73cb55100b663">Learn from me</h3>
+
+<p>You can find the full code of my port in the <a href="https://github.com/TryGhost/Ghost-Config/tree/master/freebsd/ghost">Ghost-Config</a> repository. Feel free to check it out, study it and send me your improvements.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      StartSSL &amp; Heartbleed &middot; Jakob Gillich
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Minimalist, developer. <a href="mailto:jakob@gillich.me">Say hi</a></p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="/">Home</a>
+    <a class="sidebar-nav-item " href="/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item">
+    <p>All content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Jakob Gillich</a>
+            <small>Personal blog</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">StartSSL &amp; Heartbleed</h1>
+  <span class="post-date">Apr 9 2014</span>
+  <p>Until today, I used StartCom&rsquo;s <a href="https://startssl.com/">StartSSL</a> for all of my domains. While their web interface is terrible, they are probably the only company that offers free certificates. But in reality, they are not really free (anymore).</p>
+
+<p>You surely heard of the <a href="http://heartbleed.com/">Heartbleed bug</a>, which allowed anyone to get access to the private certificate keys, making encryption totally useless. Since I was affected by this as well, there were two things I had to do:</p>
+
+<ol>
+<li>Update OpenSSL. By the time I heard about the vulnerability, FreeBSD did already provide an updated port. Easy.</li>
+<li>Replace all certificates. Turns out that in order to generate a new certificate at StartSSL, the old either has to expire or you have to revoke it - which costs $25.</li>
+</ol>
+
+<p>Considering almost <em>all</em> of their customers need a new certificate, their free certificate effectively costs $25 now. I guess a lot of their customers aren&rsquo;t willing to pay this fee and will rather risk leaked keys. That&rsquo;s just irresponsible - if you are not able to offer free certificates that are actually secure, then don&rsquo;t.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

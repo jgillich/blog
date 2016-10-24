@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Getting started with bhyve &middot; Jakob Gillich
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Minimalist, developer. <a href="mailto:jakob@gillich.me">Say hi</a></p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="/">Home</a>
+    <a class="sidebar-nav-item " href="/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item">
+    <p>All content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Jakob Gillich</a>
+            <small>Personal blog</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Getting started with bhyve</h1>
+  <span class="post-date">May 14 2016</span>
+  <p>I&rsquo;ve been running a home server for a few years, but my upload is just too poor to
+do anything serious with it, so I got myself a cheap dedicated server. Installed
+FreeBSD, because lets try bhyve, their new-ish hypervisor.</p>
+
+<p>The default &ldquo;frontend&rdquo; to bhyve is quite complex, so I used <a href="https://github.com/churchers/vm-bhyve">vm-bhyve</a>
+instead, which can definitely compete with Docker in ease of use.</p>
+
+<p>So let&rsquo;s install it. It is in ports, but the package usually outdated, so
+make sure you install from source.</p>
+
+<pre><code># if you don't have the ports tree yet
+portsnap fetch extract
+cd /usr/ports/sysutils/vm-bhyve &amp;&amp; make install clean
+</code></pre>
+
+<p>If you plan to run anything other than FreeBSD, you&rsquo;ll also need <code>grub2-bhyve</code>:</p>
+
+<pre><code>cd /usr/ports/sysutils/grub2-bhyve &amp;&amp; make install clean
+</code></pre>
+
+<p>Some initial config:</p>
+
+<pre><code>mkdir /var/vm
+zfs create -o mountpoint=/var/vm zroot/vm
+echo 'vm_enable=&quot;YES&quot;' &gt;&gt; /etc/rc.conf
+echo 'vm_dir=&quot;zfs:zroot/vm&quot;' &gt;&gt; /etc/rc.conf
+vm init
+cp /usr/local/share/examples/vm-bhyve/* /var/vm/.templates/
+</code></pre>
+
+<p>This is enough to be able to launch VMs, but we want networking as well.</p>
+
+<pre><code>echo 'net.inet.ip.forwarding=1' &gt;&gt; /etc/sysctl.conf
+echo 'pf_enable=&quot;YES&quot;' &gt;&gt; /etc/rc.conf
+vm switch create public
+vm switch add public em0
+vm switch nat public on
+pkg install dnsmasq
+echo 'dnsmasq_enable=&quot;YES&quot;' &gt;&gt; /etc/rc.conf
+mv /usr/local/etc/dnsmasq.conf.bhyve /usr/local/etc/dnsmasq.conf
+service dnsmasq start
+</code></pre>
+
+<p>vm-bhyve will add a include line to <code>/etc/pf.conf</code>, you might
+have to move it up a bit (check with <code>pfctl -f /etc/pf.conf</code>).</p>
+
+<p>Now, we need an ISO, which vm-bhyve can download for us:</p>
+
+<pre><code>vm iso ftp://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/ISO-IMAGES/10.3/FreeBSD-10.3-RELEASE-amd64-disc1.iso
+</code></pre>
+
+<p>If you want to download iso manually, just put them in <code>/var/vm/.iso/</code>.
+Let&rsquo;s launch a VM:</p>
+
+<pre><code>vm create -t freebsd-zpool -s 50G freebsd1
+vm install freebsd1 FreeBSD-10.3-RELEASE-amd64-disc1.iso
+vm console freebsd1
+</code></pre>
+
+<p>Now, just go through the installer as usual. Easy!</p>
+
+<p>Next step: figure out how to assign IPv6 addresses to VMs.
+Hopefully not too hard.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

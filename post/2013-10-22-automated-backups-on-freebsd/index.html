@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Automated Backups on FreeBSD &middot; Jakob Gillich
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Minimalist, developer. <a href="mailto:jakob@gillich.me">Say hi</a></p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="/">Home</a>
+    <a class="sidebar-nav-item " href="/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item">
+    <p>All content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Jakob Gillich</a>
+            <small>Personal blog</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Automated Backups on FreeBSD</h1>
+  <span class="post-date">Oct 22 2013</span>
+  
+
+<p>I recently had to think about a backup strategy. The FreeBSD manual <a href="http://www.freebsd.org/doc/en/books/handbook/backup-basics.html">has an entry</a> describing the method I used to use in the past:</p>
+
+<blockquote>
+<h3 id="19-10-6-do-nothing:a2e6c96426785eaa733abf9b7c2cf5a9">19.10.6. Do Nothing</h3>
+
+<p>“Do nothing” is not a computer program, but it is the most widely used backup strategy. There are no initial costs. There is no backup schedule to follow. Just say no. If something happens to your data, grin and bear it!</p>
+
+<p>If your time and data is worth little to nothing, then “Do nothing” is the most suitable backup program for the computer. But beware, FreeBSD is a useful tool and over time it can be used to create a valuable collection of files.</p>
+</blockquote>
+
+<p>To mount my backup space at Hetzner automatically, I used Samba and this fstab entry:</p>
+
+<pre><code>//u12345@your-backup.de/backup /mnt/backup smbfs rw,late,-N,-I188.40.5.173
+</code></pre>
+
+<p>There is a post on the FreeBSD forums about this that I can&rsquo;t find anymore, but the missing space between the <code>-I</code> option and the IP address is not a typo!</p>
+
+<p>The <code>-N</code> option tells Samba to not ask for a password so you need to add it to the <code>/etc/nsmb.conf</code>:</p>
+
+<pre><code>[YOUR-BACKUP.DE:U12345]
+password=yourpassword
+</code></pre>
+
+<p>Both the hostname and the username must be in uppercase!</p>
+
+<p>The recommended tools for doing backups are <code>dump</code> (creates backups) and <code>restore</code> (restores backups).</p>
+
+<p>Dump can create full and incremental backups. Unlike rsync, it will only backup mountpoints (aka devices), not directories. If you need more flexibility, you should take a look at rsync instead.</p>
+
+<p>To do incremental backups, dump uses so called <em>dump levels</em>. Here is the explanation from the manpage:</p>
+
+<blockquote>
+<p>A level 0, full backup, guarantees the entire file
+system is copied (but see also the -h option below). A level number above 0, incremental backup, tells dump to copy all files new or modified since the last dump of any lower level. The default level is 0.</p>
+</blockquote>
+
+<p>What this means is that dump stores a date when a backup finished and which dump level has been used and uses these to do further incremental backups. Here is how I do my automatic backups via cron:</p>
+
+<pre><code>0 4 * * 0 /sbin/dump -0uLa -f /mnt/backup/root0 /
+0 4 * * 1 /sbin/dump -1uLa -f /mnt/backup/root1 /
+0 4 * * 2 /sbin/dump -2uLa -f /mnt/backup/root2 /
+0 4 * * 3 /sbin/dump -3uLa -f /mnt/backup/root3 /
+0 4 * * 4 /sbin/dump -4uLa -f /mnt/backup/root4 /
+0 4 * * 5 /sbin/dump -5uLa -f /mnt/backup/root5 /
+0 4 * * 6 /sbin/dump -6uLa -f /mnt/backup/root6 /
+</code></pre>
+
+<p>Each day of a week at 4 a.m., this will execute dump.</p>
+
+<ul>
+<li>On Sundays (day 0), it will do a full backup (dump level 0) of / and store it at <code>/mnt/backup/root0</code>.</li>
+<li>On Mondays (day 1), it will do a incremental level 1 backup including  all changes since dump level 0 and store it at <code>/mnt/backup/root1</code>.</li>
+<li>On Tuesdays (day 1), it will do a incremental level 2 backup including  all changes since dump level 1 and store it at <code>/mnt/backup/root2</code>.</li>
+<li>&hellip;</li>
+</ul>
+
+<p>So what you get is a full backup every sunday and backups including the daily changes every other day of the week.</p>
+
+<p>About the options:</p>
+
+<ul>
+<li>u: Tells dump to update the dumpfile at <code>/etc/dumpdates</code> automatically. Required for incremental backups to work.</li>
+<li>L: Tells dump that it is working on a live file system so it will create a snapshot.</li>
+<li>a: <a href="http://lists.freebsd.org/pipermail/freebsd-questions/2007-July/153164.html">Do not ask any questions</a>.</li>
+<li>f: Target file.</li>
+</ul>
+
+<p>For a complete explanation of these options, read the dump manpage.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

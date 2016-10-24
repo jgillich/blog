@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://jakob.gillich.me/</loc>
+    <lastmod>2016-10-23T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2016-10-23-converting-to-typescript-2/</loc>
+    <lastmod>2016-10-23T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2016-05-14-bhyve/</loc>
+    <lastmod>2016-05-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2016-05-10-this-week-in-cloudfm-1/</loc>
+    <lastmod>2016-05-10T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2016-05-03-cloudfm/</loc>
+    <lastmod>2016-05-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2016-03-28-jamendo-rs/</loc>
+    <lastmod>2016-03-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2016-03-26-including-npm-modules-in-typescript/</loc>
+    <lastmod>2016-03-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2016-03-22-self-contained-development-environments-using-nix/</loc>
+    <lastmod>2016-03-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2016-03-18-another-year-another-static-site-generator/</loc>
+    <lastmod>2016-03-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2015-11-22-cors-proxying-with-nginx/</loc>
+    <lastmod>2015-11-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2015-11-14-nixos/</loc>
+    <lastmod>2015-11-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2015-10-22-the-state-of-video-production-on-linux/</loc>
+    <lastmod>2015-10-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2015-10-11-using-github-pages-and-travis-for-automatically-deployed-web-sites/</loc>
+    <lastmod>2015-10-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2014-08-14-installing-redmine-on-centosrhel-7/</loc>
+    <lastmod>2014-08-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2014-07-30-gulp-yet-another-javascript-build-tool/</loc>
+    <lastmod>2014-07-30T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2014-07-21-centos-7/</loc>
+    <lastmod>2014-07-21T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2014-04-21-redirecting-ctrla-with-javascript/</loc>
+    <lastmod>2014-04-21T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2014-04-09-startssl-heartbleed/</loc>
+    <lastmod>2014-04-09T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2014-02-17-mprogress-a-slim-progress-bar-written-in-vanilla-js/</loc>
+    <lastmod>2014-02-17T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2014-01-10-smaller-moment-js/</loc>
+    <lastmod>2014-01-10T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2013-11-25-my-first-freebsd-port/</loc>
+    <lastmod>2013-11-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2013-10-22-automated-backups-on-freebsd/</loc>
+    <lastmod>2013-10-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2013-10-19-fix-your-java_home/</loc>
+    <lastmod>2013-10-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2013-10-19-owncloud-client-configuration-folder/</loc>
+    <lastmod>2013-10-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2013-10-14-ghost-on-freebsd/</loc>
+    <lastmod>2013-10-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://jakob.gillich.me/post/2013-10-14-apache-force-encryption-everywhere/</loc>
+    <lastmod>2013-10-14T00:00:00+00:00</lastmod>
+  </url>
+  
+</urlset>

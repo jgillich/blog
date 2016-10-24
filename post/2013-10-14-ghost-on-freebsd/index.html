@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Ghost on FreeBSD &middot; Jakob Gillich
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Minimalist, developer. <a href="mailto:jakob@gillich.me">Say hi</a></p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="/">Home</a>
+    <a class="sidebar-nav-item " href="/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item">
+    <p>All content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Jakob Gillich</a>
+            <small>Personal blog</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Ghost on FreeBSD</h1>
+  <span class="post-date">Oct 14 2013</span>
+  
+
+<p><a href="http://ghost.org">Ghost</a> has been released to the public today. Finally! I could not try it earlier because I wasn&rsquo;t one of the Kickstarter backers. When I discovered the project, it was already way over their initial funding goal so I saw no reason to fund it.</p>
+
+<p>If you never heard of it: It is a simple blogging software. Similar to Wordpress, but it looks better, has fewer features and it&rsquo;s written in Node.js instead of PHP.</p>
+
+<p>After trying it out locally, I installed it in a jail on my FreeNAS box. The installation is not completely straightforward, here is what you have to do:</p>
+
+<h4 id="1-install-the-necessary-dependencies:de02a8f5185e1dd51d89e047d0203376">1. Install the necessary dependencies</h4>
+
+<p>Here is a list of all dependencies that you need:</p>
+
+<ul>
+<li>www/node</li>
+<li>www/npm</li>
+<li>databases/sqlite3</li>
+</ul>
+
+<p>Install them from the ports collection or the package manager of your choice.</p>
+
+<p>Ghost requires the node-sqlite3 package, and that one caused me some problems. To build and install it properly, we will need the node-gyp package from npm:</p>
+
+<pre><code>npm install node-gyp -g
+</code></pre>
+
+<h4 id="2-get-ghost-and-install-more-dependencies:de02a8f5185e1dd51d89e047d0203376">2. Get Ghost and install more dependencies</h4>
+
+<p>Now we have to download and extract Ghost. Go to the <a href="http://ghost.org/download/">download page</a> and copy the latest download link, I will not keep the one below up to date.</p>
+
+<pre><code>fetch http://ghost.org/zip/ghost-0.3.2.zip
+mkdir ghost
+unzip -d ghost ghost-0.3.2.zip
+cd ghost
+</code></pre>
+
+<p>This step is different from the official instructions. We have to explicitly pass the path of our sqlite3 installation to <code>npm install</code> (all third-party software is installed to /usr/local by default on FreeBSD).</p>
+
+<pre><code>npm install --production --sqlite=/usr/local
+</code></pre>
+
+<h4 id="3-adjust-configuration:de02a8f5185e1dd51d89e047d0203376">3. Adjust Configuration</h4>
+
+<p>We are almost done! Before running it, you have to create and open the <code>config.js</code> with your favorite text editor.</p>
+
+<pre><code>cp config.example.js config.js
+ee config.js
+</code></pre>
+
+<p>Then find the <code>production</code> section and set these properties to whatever you want:</p>
+
+<ul>
+<li>url</li>
+<li>host</li>
+<li>port</li>
+</ul>
+
+<p><code>url</code> is used for all frontend links, very useful if you run Ghost through a reverse proxy.</p>
+
+<p>Now we are ready to run it using the <code>npm start</code> command from within the Ghost directory. If you plan to run it in production mode, execute <code>setenv NODE_ENV production</code> first.</p>
+
+<h4 id="4-gain-control:de02a8f5185e1dd51d89e047d0203376">4. Gain Control</h4>
+
+<p>Forever is a nice tool that keeps your node processes running, well, forever. It&rsquo;s like the <code>service</code> command for Node.js. Thanks to npm, installation is easy:</p>
+
+<pre><code>npm install -g forever
+</code></pre>
+
+<p>To manage the process, I wrote a little service script. Put this at <code>/usr/local/etc/rc.d/ghost</code> and make it executeable:</p>
+
+<script src="https://gist.github.com/jgillich/7045531.js"></script>
+
+<p>Before the above script will work, you also have to do this:</p>
+
+<ul>
+<li>Add the <code>ghost</code> user</li>
+<li>Give the user write access to the database: <code>chown -R ghost content/data/</code></li>
+<li>Same for the logfile: <code>chmod 777 /var/log/ghost</code></li>
+<li>Install security/sudo</li>
+</ul>
+
+<p>Now you have a service that integrates very well and in a secure way with the rest of the system:</p>
+
+<ul>
+<li>Autostart on boot: Add <code>ghost_enable=&quot;YES&quot;</code> to your <code>/etc/rc.conf</code></li>
+<li>Start manually: <code>service ghost [one]start</code></li>
+<li>Stop manually: <code>service ghost [one]stop</code></li>
+<li>Logs are stored at <code>/var/log/ghost</code></li>
+</ul>
+
+<p>I will probably create a port that will automate the whole process soon (just need to learn how to do it first). And please note that the one above is the first service script I ever wrote, it may break your system! If you know how to improve it, please leave a comment.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Using GitHub Pages and Travis for automatically deployed web sites &middot; Jakob Gillich
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Minimalist, developer. <a href="mailto:jakob@gillich.me">Say hi</a></p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="/">Home</a>
+    <a class="sidebar-nav-item " href="/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item">
+    <p>All content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Jakob Gillich</a>
+            <small>Personal blog</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Using GitHub Pages and Travis for automatically deployed web sites</h1>
+  <span class="post-date">Oct 11 2015</span>
+  <p>Due to some issues with upgrading my Ghost installation, and considering that I&rsquo;m
+not blogging that much anyway, I&rsquo;ve decided to move this blog over to GitHub Pages
+using the <a href="https://middlemanapp.com/">Middleman</a> static site generator.</p>
+
+<p>To write a blog post, all I have to do is to push it to GitHub. Travis then builds
+it and pushes it to the <code>gh-pages</code> branch, from where GitHub serves it, and thanks
+to Cloudflare I even get free SSL. Zero cost, zero maintenance required.</p>
+
+<p>Now, on how to do that. Obviously you need a GitHub repository that contains your
+sources. This method works with pretty much anything that can output a static site,
+it is not limited to Middleman. Anyway, create your repository and add two files.</p>
+
+<p>One, <code>.travis.yml</code>:</p>
+
+<pre><code>language: ruby
+script: bundle exec middleman build
+sudo: false
+after_success: |
+  export PATH=$HOME/.local/bin:$PATH &amp;&amp;
+  [ $TRAVIS_BRANCH = master ] &amp;&amp;
+  [ $TRAVIS_PULL_REQUEST = false ] &amp;&amp;
+  pip install ghp-import --user `whoami` &amp;&amp;
+  ghp-import -n build &amp;&amp;
+  git push -fq https://${TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages
+env:
+  global:
+    - secure: YOUR_ENCRYPTED_GITHUB_TOKEN
+</code></pre>
+
+<p>This tells Travis to build the site and uses ghp-import to push the <code>build</code> folder
+back to GitHub. For authentication, you need a <a href="https://github.com/settings/tokens">token from GitHub</a>,
+then encrypt it using the Travis command line client (<code>gem install travis</code>) from
+within your repository:</p>
+
+<pre><code>travis encrypt TOKEN=YOUR_GITHUB_TOKEN
+</code></pre>
+
+<p>One more file you will need is a <code>CNAME</code> file. It tells GitHub pages that incoming requests
+from your domain belong to that repository. All it contains is your domain, in my case:</p>
+
+<pre><code>www.jakobgillich.com
+</code></pre>
+
+<p>Note that this has to be in the root path of your <code>gh-pages</code> branch, in the case
+of Middleman you would put it under <code>source/CNAME</code>. Once you have created these two
+files, you can enable Travis for your repository and your site should be automatically
+deployed to GitHub Pages whenever you push to your repository.</p>
+
+<p>To set up your domain, go to Cloudflare and add two DNS records to your domain:</p>
+
+<pre><code>CNAME   @     jgillich.github.io
+CNAME   www   jgillich.github.io
+</code></pre>
+
+<p>You can also set SSL to Full, Cloudflare will then always communicate with GitHub
+over SSL.</p>
+
+<p>At this point, we are pretty much done, but one more thing.
+Since we got free SSL from Cloudflare, there is no reason not to use it.
+You can force HTTPS by going to Page Rules and checking
+<em>Always use https</em> for the URL pattern <code>http://*jakobgillich.com/*</code>.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

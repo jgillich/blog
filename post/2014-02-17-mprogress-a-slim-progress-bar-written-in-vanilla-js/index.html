@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      MProgress, a slim progress bar written in Vanilla JS &middot; Jakob Gillich
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Minimalist, developer. <a href="mailto:jakob@gillich.me">Say hi</a></p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="/">Home</a>
+    <a class="sidebar-nav-item " href="/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item">
+    <p>All content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Jakob Gillich</a>
+            <small>Personal blog</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">MProgress, a slim progress bar written in Vanilla JS</h1>
+  <span class="post-date">Feb 17 2014</span>
+  <p><a href="https://github.com/jgillich/mprogress">MProgress </a> is a small JavaScript library I&rsquo;ve been working on last weekend. If you know <a href="https://github.com/rstacruz/nprogress">NProgress</a>, my project is a much smaller (70 lines vs. 300+ lines) clone that has no dependency on jQuery. To be fair, it also has fewer features and only works on more modern (ES5-compatible) browsers.</p>
+
+<p>I have never done a lot of DOM stuff without jQuery so this has been quite interesting. I had to look up how to do really basic things like inserting an element, but I also realized that there are very few cases where I will ever want to prefer <a href="http://vanilla-js.com/">Vanilla JS</a> over jQuery. For example, to remove a element from the DOM, you have to call <code>removeChild</code> on the parent:</p>
+
+<pre><code>el.parentNode.removeChild(el);
+</code></pre>
+
+<p>Now the same code in jQuery:</p>
+
+<pre><code>$(el).remove()
+</code></pre>
+
+<p>The latter is not only shorter, it also easier to understand.</p>
+
+<p>Anyway, in this case it made a lot of sense to write vanilla JavaScript: You can load it, show a progress bar and then start loading the huge chunk of minified scripts that your application consists of. Users with a slow (mobile) connection will then see a progress bar that informs them the page is being loaded instead of just a blank page.</p>
+
+<p>To find out more, I&rsquo;ve <a href="http://jgillich.github.io/mprogress/">put a small page together</a> that includes a live example of the library.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

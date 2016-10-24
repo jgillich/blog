@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      This Week in CloudFM 1 &middot; Jakob Gillich
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Minimalist, developer. <a href="mailto:jakob@gillich.me">Say hi</a></p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="/">Home</a>
+    <a class="sidebar-nav-item " href="/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item">
+    <p>All content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Jakob Gillich</a>
+            <small>Personal blog</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">This Week in CloudFM 1</h1>
+  <span class="post-date">May 10 2016</span>
+  
+
+<p>or: How to implement XML parsing in just 500 lines of Rust.</p>
+
+<p>A weekly blog about my progress on CloudFM, a offline-first, multi-backend music player.</p>
+
+<p>Not the best start for a series like this, but last week my SDD died. Then I wasted
+an entire evening trying to install OpenSuse Tumbleweed (something something SecureBoot).
+Bottom line, I did some stuff, but not even close to what I wanted to achieve.</p>
+
+<h3 id="what-s-new:7ed19aeb5264e5103fe0af8507672bd5">What&rsquo;s new</h3>
+
+<ul>
+<li><p><a href="https://github.com/jgillich/hyperdav">hyperdav</a> got all required functionality.
+I&rsquo;m not particularly proud about the code, especially the response parsing using
+xml-rs is extremely verbose, even though like 90% of the body is ignored anyway.
+Maybe real xml support in serde will happen one day.</p></li>
+
+<li><p>WebDAV indexing is now implemented. This change broke some parts of the app, since
+the URI format has changed to now always include the backend id.</p></li>
+
+<li><p>All components are now dockerized. I want to do some form of automated deployment
+soon-ish. Not because it makes sense right now, but because playing with ops stuff
+is fun.</p></li>
+</ul>
+
+<h3 id="what-s-next:7ed19aeb5264e5103fe0af8507672bd5">What&rsquo;s next</h3>
+
+<p>In case my notebook decides to explode tomorrow, let&rsquo;s set the goals a bit lighter:</p>
+
+<ul>
+<li>Make the web app usable for everyday listening - same as last week</li>
+<li>Implement the UI to add ownCloud/Box.com backends, which will be
+stored as webdav behind the scenes</li>
+</ul>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

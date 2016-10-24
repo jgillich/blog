@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      NixOS &middot; Jakob Gillich
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Minimalist, developer. <a href="mailto:jakob@gillich.me">Say hi</a></p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="/">Home</a>
+    <a class="sidebar-nav-item " href="/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item">
+    <p>All content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Jakob Gillich</a>
+            <small>Personal blog</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">NixOS</h1>
+  <span class="post-date">Nov 14 2015</span>
+  
+
+<p>After reading about it so many times, I finally tried
+<a href="https://nixos.org/">NixOS</a>. Never heard of it? Definitely check out their web
+site, but if you&rsquo;re not into functional programming, you probably won&rsquo;t
+understand what it is all about. At least I didn&rsquo;t, until I tried it. And it
+blew my mind. But let me break it down for you.</p>
+
+<h2 id="nixos:ef02e7022056e1379c60b64c46d6ae0c">NixOS</h2>
+
+<p>NixOS is basically a regular Linux distro, it runs on the desktop as well as on
+the server. What makes NixOS special is the way it is configured. The entire
+system is based on a single configuration file at
+<code>/etc/nixos/configuration.nix</code>. NixOS configuration uses the Nix programming
+language, having programming knowledge is not required, but makes things easier.
+Nix is also a package manager, but more about that later. Unlike configuration
+management tools like Ansible, there is zero state in the NixOS configuration.
+If you remove a service from your NixOS configuration, it is gone, there is no
+uninstall step.</p>
+
+<p>Traditional configuration management works by checking the system state and
+performing the required actions. For example, installing a service usually goes
+like this:</p>
+
+<ul>
+<li>Manually write the configuration file</li>
+<li>Ensure required packages are installed</li>
+<li>Ensure the configuration is correct</li>
+<li>Ensure the service exists</li>
+<li>Ensure the service is started</li>
+</ul>
+
+<p>On NixOS, you add this to your configuration:</p>
+
+<pre><code>services.syncthing =
+  { enable = true;
+    user = &quot;jakob&quot;;
+  };
+</code></pre>
+
+<ul>
+<li>There is not installation. enable = true; implies that.</li>
+<li>There is no separate configuration, it can be done in the NixOS configuration</li>
+</ul>
+
+<p>If you install something on NixOS, nothing is actually written to paths like
+<code>/usr</code> or <code>/bin</code>. Instead, every package and every service gets its own file
+system structure at <code>/nix/store</code>. The actual system that you are running is made
+of symlinks to these directories (and to each other). Why is this the best thing
+ever? Whenever you change something in your configuration, NixOS creates a new
+copy of your system, again made of links to <code>/nix/store</code>. These copies are
+called profiles, and they occupy almost no space. When ever you&rsquo;ve made an error
+in your configuration, you can just roll back to any previous state. This is
+especially great when you&rsquo;ve made changes that result in you being unable to
+boot, you can simply select a older profile during boot.</p>
+
+<h2 id="nix:ef02e7022056e1379c60b64c46d6ae0c">Nix</h2>
+
+<p>Nix is a package manager and not specific to NixOS, it works on other Linux
+distributions, too. Its syntax is very similar to other package managers,
+installing something is as easy as:</p>
+
+<pre><code>nix-env -i git
+</code></pre>
+
+<p>But of course it&rsquo;s not exactly like other package managers. First of all, it can
+operate in multi-user-mode, which means you don&rsquo;t need root access to install
+software. Just like NixOS, Nix uses profiles and is able to roll back
+installations.</p>
+
+<p>Something that is probably unique to Nix is the ability to override packages and
+to create derivatives. By default, Nix uses binary packages, but you can make
+changes to packages and it will then compile the package with your changes. To
+give you a example, you can use this to create your own version of vim with the
+plugins you need. This means you don&rsquo;t have to manually manage and update
+plugins, Nix can do it for you. These overrides can be done in your system-wide
+configuration or on a per-user basis at <code>~/.nixpks/config.nix</code>.</p>
+
+<p>There is also an incredible amount of packages for NixOS. Often, smaller Linux
+distributions have a hard time maintaining so many packages, but that doesn&rsquo;t
+seem to be the case for Nix. I actually found that there are more packages in
+Nix than there are in Fedora - not based on the raw numbers, but on what I
+use.</p>
+
+<p>Updates in Nix are based on channels, which are just releases, but you can mix
+them without problems. I&rsquo;ve wanted some newer versions of some packages, so I
+downloaded the <a href="https://github.com/NixOS/nixpkgs">nixpkgs</a> repository and ran:</p>
+
+<pre><code>&gt; sudo -s nix-env -i rkt -f ~/devel/nixpkgs/
+replacing old ‘rkt-0.8.0’
+installing ‘rkt-0.10.0’
+</code></pre>
+
+<p>Yes, it&rsquo;s that simple. What is also simple is installing non-free software.
+Nix has packages for all the drivers and Steam, you just need to allow
+them in your config:</p>
+
+<pre><code>nixpkgs.config.allowUnfree = true;
+</code></pre>
+
+<h2 id="problems:ef02e7022056e1379c60b64c46d6ae0c">Problems</h2>
+
+<p>The way NixOS works offers many advantages, but there are problems. Any software
+that relies on standard paths does not work on NixOS. Any bash script that
+uses <code>#!/bin/bash</code> does not work on NixOS. The included packages have all been
+changed to ensure they work, but anything you get from elsewhere might not work.
+Sometimes when you just need to do this one thing, and do it quickly, NixOS can
+get in the way. I personally just use Docker for anything that&rsquo;s not
+Nix-compatible, but I&rsquo;m also working on packaging a few things. This would be a
+valid reason why there are so many packages - packaging is easy, but you need it
+to really get anything working.</p>
+
+<p>I also have to say, there is not a lot of information about NixOS on the web.
+I&rsquo;ve been reading more of the nixpkgs source code than anything else, but that&rsquo;s
+not a bad thing. I feel like it&rsquo;s actually a strong point about Nix, the source
+is easy to understand and it is never outdated. But it is really not a system
+where you can just search for you problem and find the answer in some shitty
+forum.</p>
+
+<p>One example for problems I&rsquo;ve had is setting the GTK+2 theme. It defaults to the
+very ugly Raleigh. But how do you change it? To set the theme, you need to set
+<code>GTK2_RC_FILES</code> to the theme path - which is hard on Nix because the regular
+<code>/usr/share</code> doesn&rsquo;t exist. And there wasn&rsquo;t a single mention of this problem on
+the web - which really surprised me. The solution is, you might have guessed it,
+just a little bit of configuration:</p>
+
+<pre><code>environment.variables =
+  { GTK2_RC_FILES = &quot;${pkgs.gnome_themes_standard}/share/themes/Adwaita/gtk-2.0/gtkrc&quot;; };
+</code></pre>
+
+<p>That being said, there&rsquo;s great documentation that covers a lot of topics.</p>
+
+<h2 id="solutions:ef02e7022056e1379c60b64c46d6ae0c">Solutions</h2>
+
+<p>I love the way the NixOS configuration works.I can write the configuration once
+and deploy it on any machine or even to a <a href="https://nixos.org/releases/nixos/15.09/nixos-15.09.500.4702666/manual/index.html#sec-imperative-containers">container</a>. Or do it the other way around, run the server configuration in a container
+on your workstation.</p>
+
+<p>There is also <a href="https://github.com/NixOS/nixops">nixops</a> to deploy NixOS
+machines to the various cloud providers.</p>
+
+<p>To wrap this up - NixOS is awesome and solves a lot of problems, you should try
+it.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

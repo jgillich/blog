@@ -1,0 +1,1391 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Jakob Gillich </title>
+    <link>https://jakob.gillich.me/post/</link>
+    <language>en-us</language>
+    <author></author>
+    <rights>(C) 2016</rights>
+    <updated>2016-10-23 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Converting a project to TypeScript 2.0</title>
+          <link>https://jakob.gillich.me/post/2016-10-23-converting-to-typescript-2/</link>
+          <pubDate>Sun, 23 Oct 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2016-10-23-converting-to-typescript-2/</guid>
+          <description>
+
+&lt;p&gt;If there is one thing the TypeScript people should to improve, it&amp;rsquo;s documentation.
+I just went through a small Odyssey trying to convert a project to TypeScript
+2.0 and the new way of getting definition files. Hint: Look at how the Rust
+project does documentation.&lt;/p&gt;
+
+&lt;h3 id=&#34;updating-typescript:2aa5e8d3cfed7ab91aaad0c939bfae88&#34;&gt;Updating TypeScript&lt;/h3&gt;
+
+&lt;p&gt;Go into your &lt;code&gt;package.json&lt;/code&gt;, set TypeScript to version &lt;code&gt;2.something&lt;/code&gt; and run
+&lt;code&gt;npm install&lt;/code&gt;. Done. Try to compile your project, it probably won&amp;rsquo;t because the
+compiler is a bit more strict. The error messages however should give you an
+idea what needs to be changed, go and fix your code. Visual Studio Code uses
+the globally installed TypeScript version, update that one as well by running
+&lt;code&gt;npm install -g&lt;/code&gt; - yes, not update, don&amp;rsquo;t ask why. I make this mistake every.
+single. time.&lt;/p&gt;
+
+&lt;h3 id=&#34;use-types:2aa5e8d3cfed7ab91aaad0c939bfae88&#34;&gt;Use @types&lt;/h3&gt;
+
+&lt;p&gt;You can now install type definitions via npm, typings/tsd
+are no longer needed. Installation goes like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;npm install --save @types/react
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;All DefinitelyTyped definitions are available, so you might as well do this now.
+After installing all typings, remove the reference path to the old definitions,
+try to build and observe how TypeScript cannot resolve a single module. First,
+we have to tell TypeScript that we&amp;rsquo;re using node modules:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// tsconfig.json
+{
+  &amp;quot;compilerOptions&amp;quot;: {
+    &amp;quot;moduleResolution&amp;quot;: &amp;quot;node&amp;quot;
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now, you might actually be able to compile. Unless you&amp;rsquo;re using any global
+non-standard functions like &lt;code&gt;require&lt;/code&gt; or core-js shims. Remember that you
+had to explicitly load typings using the reference path before? This is no
+longer necessary, but this also means TypeScript has no idea what typings are
+available. When you &lt;code&gt;import&lt;/code&gt; something, they are loaded automatically, but if
+something should always be loaded, you need to configure that:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// tsconfig.json
+{
+  &amp;quot;compilerOptions&amp;quot;: {
+    &amp;quot;types&amp;quot;: [
+      &amp;quot;node&amp;quot;, &amp;quot;mocha&amp;quot;, &amp;quot;core-js&amp;quot;
+    ]
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Done, now your project should work as usual and with one less tool required.
+This wasn&amp;rsquo;t actually hard, was it? It still took me around an hour to figure
+out, which could&amp;rsquo;ve been prevented by a simple mention of these things in the
+release announcement or elsewhere (search the title of this post, there is
+zero documentation about this).&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Getting started with bhyve</title>
+          <link>https://jakob.gillich.me/post/2016-05-14-bhyve/</link>
+          <pubDate>Sat, 14 May 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2016-05-14-bhyve/</guid>
+          <description>&lt;p&gt;I&amp;rsquo;ve been running a home server for a few years, but my upload is just too poor to
+do anything serious with it, so I got myself a cheap dedicated server. Installed
+FreeBSD, because lets try bhyve, their new-ish hypervisor.&lt;/p&gt;
+
+&lt;p&gt;The default &amp;ldquo;frontend&amp;rdquo; to bhyve is quite complex, so I used &lt;a href=&#34;https://github.com/churchers/vm-bhyve&#34;&gt;vm-bhyve&lt;/a&gt;
+instead, which can definitely compete with Docker in ease of use.&lt;/p&gt;
+
+&lt;p&gt;So let&amp;rsquo;s install it. It is in ports, but the package usually outdated, so
+make sure you install from source.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# if you don&#39;t have the ports tree yet
+portsnap fetch extract
+cd /usr/ports/sysutils/vm-bhyve &amp;amp;&amp;amp; make install clean
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you plan to run anything other than FreeBSD, you&amp;rsquo;ll also need &lt;code&gt;grub2-bhyve&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd /usr/ports/sysutils/grub2-bhyve &amp;amp;&amp;amp; make install clean
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Some initial config:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir /var/vm
+zfs create -o mountpoint=/var/vm zroot/vm
+echo &#39;vm_enable=&amp;quot;YES&amp;quot;&#39; &amp;gt;&amp;gt; /etc/rc.conf
+echo &#39;vm_dir=&amp;quot;zfs:zroot/vm&amp;quot;&#39; &amp;gt;&amp;gt; /etc/rc.conf
+vm init
+cp /usr/local/share/examples/vm-bhyve/* /var/vm/.templates/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is enough to be able to launch VMs, but we want networking as well.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;echo &#39;net.inet.ip.forwarding=1&#39; &amp;gt;&amp;gt; /etc/sysctl.conf
+echo &#39;pf_enable=&amp;quot;YES&amp;quot;&#39; &amp;gt;&amp;gt; /etc/rc.conf
+vm switch create public
+vm switch add public em0
+vm switch nat public on
+pkg install dnsmasq
+echo &#39;dnsmasq_enable=&amp;quot;YES&amp;quot;&#39; &amp;gt;&amp;gt; /etc/rc.conf
+mv /usr/local/etc/dnsmasq.conf.bhyve /usr/local/etc/dnsmasq.conf
+service dnsmasq start
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;vm-bhyve will add a include line to &lt;code&gt;/etc/pf.conf&lt;/code&gt;, you might
+have to move it up a bit (check with &lt;code&gt;pfctl -f /etc/pf.conf&lt;/code&gt;).&lt;/p&gt;
+
+&lt;p&gt;Now, we need an ISO, which vm-bhyve can download for us:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;vm iso ftp://ftp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/ISO-IMAGES/10.3/FreeBSD-10.3-RELEASE-amd64-disc1.iso
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you want to download iso manually, just put them in &lt;code&gt;/var/vm/.iso/&lt;/code&gt;.
+Let&amp;rsquo;s launch a VM:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;vm create -t freebsd-zpool -s 50G freebsd1
+vm install freebsd1 FreeBSD-10.3-RELEASE-amd64-disc1.iso
+vm console freebsd1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now, just go through the installer as usual. Easy!&lt;/p&gt;
+
+&lt;p&gt;Next step: figure out how to assign IPv6 addresses to VMs.
+Hopefully not too hard.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>This Week in CloudFM 1</title>
+          <link>https://jakob.gillich.me/post/2016-05-10-this-week-in-cloudfm-1/</link>
+          <pubDate>Tue, 10 May 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2016-05-10-this-week-in-cloudfm-1/</guid>
+          <description>
+
+&lt;p&gt;or: How to implement XML parsing in just 500 lines of Rust.&lt;/p&gt;
+
+&lt;p&gt;A weekly blog about my progress on CloudFM, a offline-first, multi-backend music player.&lt;/p&gt;
+
+&lt;p&gt;Not the best start for a series like this, but last week my SDD died. Then I wasted
+an entire evening trying to install OpenSuse Tumbleweed (something something SecureBoot).
+Bottom line, I did some stuff, but not even close to what I wanted to achieve.&lt;/p&gt;
+
+&lt;h3 id=&#34;what-s-new:7ed19aeb5264e5103fe0af8507672bd5&#34;&gt;What&amp;rsquo;s new&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;https://github.com/jgillich/hyperdav&#34;&gt;hyperdav&lt;/a&gt; got all required functionality.
+I&amp;rsquo;m not particularly proud about the code, especially the response parsing using
+xml-rs is extremely verbose, even though like 90% of the body is ignored anyway.
+Maybe real xml support in serde will happen one day.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;WebDAV indexing is now implemented. This change broke some parts of the app, since
+the URI format has changed to now always include the backend id.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;All components are now dockerized. I want to do some form of automated deployment
+soon-ish. Not because it makes sense right now, but because playing with ops stuff
+is fun.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;what-s-next:7ed19aeb5264e5103fe0af8507672bd5&#34;&gt;What&amp;rsquo;s next&lt;/h3&gt;
+
+&lt;p&gt;In case my notebook decides to explode tomorrow, let&amp;rsquo;s set the goals a bit lighter:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Make the web app usable for everyday listening - same as last week&lt;/li&gt;
+&lt;li&gt;Implement the UI to add ownCloud/Box.com backends, which will be
+stored as webdav behind the scenes&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>CloudFM</title>
+          <link>https://jakob.gillich.me/post/2016-05-03-cloudfm/</link>
+          <pubDate>Tue, 03 May 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2016-05-03-cloudfm/</guid>
+          <description>
+
+&lt;p&gt;Over the last few months, I&amp;rsquo;ve been working on a next-generation music player
+for the age of &amp;ldquo;servers connected to the internet&amp;rdquo;, also known as the &amp;ldquo;cloud&amp;rdquo;.
+Because I am bad at naming things, I called it &lt;a href=&#34;https://github.com/cloudfm/cloudfm&#34;&gt;CloudFM&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;You don&amp;rsquo;t actually need to click the link, because there&amp;rsquo;s nothing to see there.
+I&amp;rsquo;m mainly putting this out there because I want to regularly share progress
+I&amp;rsquo;ve made. But let&amp;rsquo;s start with what I&amp;rsquo;ve done so far.&lt;/p&gt;
+
+&lt;h3 id=&#34;why-i-m-doing-this:bfc9e93011646c659275950cfe33bd5a&#34;&gt;Why I&amp;rsquo;m doing this&lt;/h3&gt;
+
+&lt;p&gt;Long story short, I loved Rdio, then Rdio shut down. Turns out the alternatives
+aren&amp;rsquo;t as good as Rdio and a lot of them even require Flash (2016??).
+I switched to Subsonic, which works ok, but Rdio was just so much better in so
+many ways. So I&amp;rsquo;m building my own thing instead.&lt;/p&gt;
+
+&lt;p&gt;CloudFM is a music player that integrates a plethora of cloud services
+(think Spotify, YouTube, Dropbox, SoundCloud and more) into a single player
+interface. Since mobile internet is expensive and not always available, I want
+to make it offline-capable as much as possible. And nowadays, you have so much
+storage space on your phone, meanwhile your tiny SSD on your notebook
+is constantly running out of space - CloudFM will let you store your music
+on your phone, and listen to it on your desktop.&lt;/p&gt;
+
+&lt;h3 id=&#34;micro-services-written-in-rust:bfc9e93011646c659275950cfe33bd5a&#34;&gt;Micro-services written in Rust&lt;/h3&gt;
+
+&lt;p&gt;To be honest, I did not intend to use a micro-service architecture from the start.
+I actually wrote a monolithic server first, until I realized: I&amp;rsquo;m going to
+need a lot of this code at different places. For example, indexing code will
+have to run on the server side, but also as part of a GUI desktop app. That is
+why I turned my server into a library that compiles to a couple of binaries:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;indexd&lt;/code&gt;: The indexing daemon, it indexes music from various online services (and local files).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;proxyd&lt;/code&gt;: Give it a track ID, it will respond with a audio file, not matter where
+it is stored. In the future, it will also do things like on the fly re-encoding
+of files, and more.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;manager&lt;/code&gt;: A desktop app, to index and serve local files. Will probably use the
+excellent GTK bindings for Rust. Or maybe the Qt Quick bindings, because
+GTK isn&amp;rsquo;t actually that great on platforms other than Linux. Ideally, both.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;web-app-written-in-typescript-react-redux:bfc9e93011646c659275950cfe33bd5a&#34;&gt;Web app written in TypeScript/React/Redux&lt;/h3&gt;
+
+&lt;p&gt;Initially, I started writing it in Elm. It was an interesting experiment,
+and there are a lot of things I like about the language, but the cons didn&amp;rsquo;t
+quite outweight the pros. The short version: The language has a few shortcomings
+even in its domain (web apps), the ecosystem is rather small, integrating
+existing JavaScript libraries and APIs is a lot of work.&lt;/p&gt;
+
+&lt;p&gt;Searching for an alternative, I decided to use TypeScript first. I treat it
+as a very powerful linter, if your code passes the linter (compiles), it&amp;rsquo;s
+very likely correct. Less edit-tab-reload-tab-edit, more instant feedback
+through your editor. While the type system is not as good as Rust&amp;rsquo;s, and Redux
+is not very TypeScript-friendly, I do not regret it at all, partially because of
+the awesome TypeScript integration in Visual Studio Code.&lt;/p&gt;
+
+&lt;p&gt;Choosing a front-end framework was a really straightforward process: I knew
+I wanted a native mobile app, because hybrid apps just aren&amp;rsquo;t that great. And
+since we bascially require PouchDB for offline availability of the database,
+React and React Native are pretty much the only viable option. Together with
+Redux, we&amp;rsquo;ve got a pretty nice and Elm-like stack with a big ecosystem.&lt;/p&gt;
+
+&lt;h3 id=&#34;what-works:bfc9e93011646c659275950cfe33bd5a&#34;&gt;What works&lt;/h3&gt;
+
+&lt;p&gt;It&amp;rsquo;s been a bit over a week since I started rewriting the web app, and
+here&amp;rsquo;s what it looks like:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://jakob.gillich.me/images/cloudfm.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This is just a very early prototype, expect things to change, a lot. A lot
+of the features you&amp;rsquo;d expect from any player aren&amp;rsquo;t there, yet. The design
+will also definitely change in the future.&lt;/p&gt;
+
+&lt;p&gt;What&amp;rsquo;s not visible on the screenshot is that the music is not just local, but
+also from Jamendo. In the future, a lot more backends will follow.&lt;/p&gt;
+
+&lt;h3 id=&#34;what-s-next:bfc9e93011646c659275950cfe33bd5a&#34;&gt;What&amp;rsquo;s next&lt;/h3&gt;
+
+&lt;p&gt;My goals for this week:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Continue work on my WebDAV client for Rust and then implement the WebDAV backend&lt;/li&gt;
+&lt;li&gt;Make the web app usable for everyday listening&lt;/li&gt;
+&lt;li&gt;Start working on a Musicbrainz client&lt;/li&gt;
+&lt;li&gt;Read Design for Hackers&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>jamendo-rs</title>
+          <link>https://jakob.gillich.me/post/2016-03-28-jamendo-rs/</link>
+          <pubDate>Mon, 28 Mar 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2016-03-28-jamendo-rs/</guid>
+          <description>&lt;p&gt;I wrote a &lt;a href=&#34;https://github.com/jgillich/jamendo-rs&#34;&gt;Jamendo API client in Rust&lt;/a&gt;
+today. And it was easy.&lt;/p&gt;
+
+&lt;p&gt;Yes, Rust is quite hard to learn. But after you&amp;rsquo;ve grasped the concepts it&amp;rsquo;s
+built around, like ownership and lifetimes, it all makes sense. Unlike
+JavaScript, which never made any sense.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Including npm modules in TypeScript</title>
+          <link>https://jakob.gillich.me/post/2016-03-26-including-npm-modules-in-typescript/</link>
+          <pubDate>Sat, 26 Mar 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2016-03-26-including-npm-modules-in-typescript/</guid>
+          <description>&lt;p&gt;I&amp;rsquo;ve written quite a lot JavaScript and Node.js code over the last few years.
+Unlike many, I think it&amp;rsquo;s a great language and server platform. However, the
+lack of static types does regularly introduce errors that are hard to find.
+That&amp;rsquo;s why I decided to use &lt;a href=&#34;http://typescriptlang.org/&#34;&gt;TypeScript&lt;/a&gt; for a new
+project.&lt;/p&gt;
+
+&lt;p&gt;The website describes it as a &lt;em&gt;superset&lt;/em&gt; of JavaScript, with typings being
+optional. I was quite surprised to find out this is not true, at all. I started
+by installing TypeScript, a webpack loader, and react with npm. Now, we should
+be able to do this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import * as React from &amp;quot;react&amp;quot;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;ERROR in ./src/main.ts
+(2,24): error TS2307: Cannot find module &#39;react&#39;.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Uh, what? I just installed it, why can&amp;rsquo;t the compiler find it? After doing a bit
+of reading (the official docs are severely lacking in that regard, I have to
+say), I found out that typings are actually not optional. There are two
+solutions:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Install the &lt;code&gt;require&lt;/code&gt; typings and load modules with &lt;code&gt;require()&lt;/code&gt;. This works
+because the typings for &lt;code&gt;require&lt;/code&gt; define it as returning &lt;code&gt;any&lt;/code&gt;, therefore
+disabling all type checks for it.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Install the typings for &lt;code&gt;react&lt;/code&gt;. This is the recommended approach, however
+the typings have to be created by hand, therefore they don&amp;rsquo;t exist for all
+modules.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;How do you install typings, you might ask. There is a project with the same
+name that provides a package manager for them, similar to npm. Install it
+via &lt;code&gt;npm install -g typings&lt;/code&gt;, then you can install type definitions using
+&lt;code&gt;typings install react --save --ambient&lt;/code&gt;. &lt;code&gt;--save&lt;/code&gt; stores them in the
+&lt;code&gt;typings.json&lt;/code&gt;, which is like your &lt;code&gt;package.json&lt;/code&gt; but for typings. &lt;code&gt;--ambient&lt;/code&gt;
+is required for modules that export to the global namespace - I don&amp;rsquo;t yet
+know why it&amp;rsquo;s required for &lt;code&gt;react&lt;/code&gt;, only that it won&amp;rsquo;t work without.&lt;/p&gt;
+
+&lt;p&gt;After you&amp;rsquo;ve installed them, you need to add one special line to the top of
+your code:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/// &amp;lt;reference path=&#39;../typings/browser.d.ts&#39;/&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The path is relative from your source file and tells TypeScript to load
+the definitions that you&amp;rsquo;ve installed via &lt;code&gt;typings&lt;/code&gt;. Note that &lt;code&gt;browser.d.ts&lt;/code&gt;
+is for browser projects, if you target Node.js, use &lt;code&gt;main.d.ts&lt;/code&gt; instead.&lt;/p&gt;
+
+&lt;p&gt;Initially, I also had issues with multiple definitions. This is because
+TypeScript, by default, loads all &lt;code&gt;.ts&lt;/code&gt; files. What we usually want is just a
+single file that includes the rest of our code. To fix this, we need to create
+a &lt;code&gt;tsconfig.json&lt;/code&gt; in our project root:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+  &amp;quot;files&amp;quot;: [
+    &amp;quot;src/main.ts&amp;quot;
+  ]
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now, finally, we are able to use React from TypeScript. I feel like there is a
+lot that needs to be improved here, starting with the compiler error message.&lt;/p&gt;
+
+&lt;p&gt;Now, what if there are no typings for the module you&amp;rsquo;d like to use? As I
+mentioned earlier, you can use &lt;code&gt;require()&lt;/code&gt; to completely bypass type checks
+by installing the typings for it and then doing:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import h = require(&#39;react-hyperscript-helpers&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Unfortunately, this is not possible with ES6 modules, so we don&amp;rsquo;t get the
+ability to destructure during import. I think that creating typings is what you
+should be doing instead, that&amp;rsquo;s why you&amp;rsquo;re using TypeScript in the first
+place, right?&lt;/p&gt;
+
+&lt;p&gt;The &lt;a href=&#34;http://www.typescriptlang.org/docs/handbook/writing-definition-files.html&#34;&gt;Handbook&lt;/a&gt;
+tells you how to do it, here&amp;rsquo;s just a quick example, my &lt;code&gt;react-hyperscript-helpers.d.ts&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;declare namespace ReactHyperscriptHelpers {
+  function h1(text: string): any;
+}
+
+declare module &amp;quot;react-hyperscript-helpers&amp;quot; {
+  export = ReactHyperscriptHelpers;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you can see, it defines a single function &lt;code&gt;h1&lt;/code&gt; that takes a &lt;code&gt;string&lt;/code&gt; and
+returns &lt;code&gt;any&lt;/code&gt;. Now, we can do this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/// &amp;lt;reference path=&#39;./react-hyperscript-helpers.d.ts&#39;/&amp;gt;
+import { h1 } from &amp;quot;react-hyperscript-helpers&amp;quot;;
+
+ReactDOM.render(
+  h1(&#39;Hello, World!&#39;),
+  document.body
+);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I don&amp;rsquo;t think it ever took me longer to get a Hello World up and running.
+Microsoft, please make this stuff easier to get started with.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Self-contained development environments using Nix</title>
+          <link>https://jakob.gillich.me/post/2016-03-22-self-contained-development-environments-using-nix/</link>
+          <pubDate>Tue, 22 Mar 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2016-03-22-self-contained-development-environments-using-nix/</guid>
+          <description>&lt;p&gt;Nix is a package manager that works a bit differently. It allows you to install
+any version of any package alongside each other. Since you can&amp;rsquo;t, for example,
+have multiple &lt;code&gt;python&lt;/code&gt; executables, &lt;code&gt;nix-shell&lt;/code&gt; is used to give you a
+environment with all the dependencies you need.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s say you have a Rust project. You create a &lt;code&gt;default.nix&lt;/code&gt; in your project
+directory:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;with import &amp;lt;nixpkgs&amp;gt; { };
+
+rustPlatform.buildRustPackage rec {
+  name = &amp;quot;my-project-${version}&amp;quot;;
+  version = &amp;quot;0.1&amp;quot;;
+  src = ./.;
+  buildInputs = [ openssl pkgconfig ];
+  depsSha256 = &amp;quot;160ar8jfzhhrg5rk3rjq3sc5mmrakysynrpr4nfgqkbq952il2zk&amp;quot;;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This defines a Rust package in the current directory, with the &lt;code&gt;openssl&lt;/code&gt;
+dependency. Note that &lt;code&gt;buildInputs&lt;/code&gt; only lists native dependencies, your
+crates are specified in your &lt;code&gt;Cargo.toml&lt;/code&gt; as usual.&lt;/p&gt;
+
+&lt;p&gt;To build a package out of this, you can run &lt;code&gt;nix-build default.nix&lt;/code&gt;
+(or just &lt;code&gt;nix-build .&lt;/code&gt;). However, this will always build the project from a
+clean state, which we don&amp;rsquo;t really want during development. So instead, we do
+&lt;code&gt;nix-shell .&lt;/code&gt;, which puts us in a new shell that not only has &lt;code&gt;openssl&lt;/code&gt; and
+&lt;code&gt;pkgconfig&lt;/code&gt;, but also all dependencies of &lt;code&gt;rustPlatform&lt;/code&gt;, like &lt;code&gt;rustc&lt;/code&gt; and
+&lt;code&gt;cargo&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now, what if we need a database? Well, we&amp;rsquo;d have to install that through the
+usual channels - right? Wrong! This is where things get really interesting: Nix
+has packages for pretty much all databases, and nix-shell allows us to run
+custom commands when we enter a shell. This property is called &lt;code&gt;shellHook&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;rustPlatform.buildRustPackage rec {
+  name = &amp;quot;my-project-${version}&amp;quot;;
+  // ...
+  shellHook = &#39;&#39;
+    ${couchdb}/bin/couchdb -a couchdb.ini &amp;amp;
+  &#39;&#39;;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This would start CouchDB every time we enter our development
+environment. And if you&amp;rsquo;re still using Make to run your build commands, consider
+specifying them in your &lt;code&gt;shellHook&lt;/code&gt; instead:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;shellHook = &#39;&#39;
+  function ci {
+    cargo build
+    cargo test
+  }
+&#39;&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can of course use Nix on your continuous integration platform, like Travis,
+by setting the &lt;code&gt;script&lt;/code&gt; to:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;nix-shell default.nix --command ci
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;By using Nix, the environment on Travis is exactly the same as the one you use
+locally. No longer will you have issues because Travis hasn&amp;rsquo;t updated their
+sqlite version in the last 5 years.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Another Year, Another Static Site Generator</title>
+          <link>https://jakob.gillich.me/post/2016-03-18-another-year-another-static-site-generator/</link>
+          <pubDate>Fri, 18 Mar 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2016-03-18-another-year-another-static-site-generator/</guid>
+          <description>&lt;p&gt;This year&amp;rsquo;s hotness: &lt;a href=&#34;http://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;. Being the web hipster that I am,
+of course I switched. Not that I didn&amp;rsquo;t have a good reason, I had already
+written two or three posts with Middleman, so it felt really old and used.&lt;/p&gt;
+
+&lt;p&gt;On a serious note, Middleman does feel a bit limiting when you build more
+complex sites with it. But maybe using static site generators for anything other
+than simple blogs and documentation is just a bad idea. It&amp;rsquo;s certainly a lot
+better than Jekyll and its awful Liquid templating syntax.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>CORS Proxying with nginx</title>
+          <link>https://jakob.gillich.me/post/2015-11-22-cors-proxying-with-nginx/</link>
+          <pubDate>Sun, 22 Nov 2015 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2015-11-22-cors-proxying-with-nginx/</guid>
+          <description>&lt;p&gt;CORS is a very advanced security technology designed to waste your time. It works for production environments,
+but oh Firefox can I please just send some requests to that API to test
+my app? The answer is no, so this is how to configure nginx and make your local
+dev environment so much more secure:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;server {
+  listen 8080;
+  location / {
+    if ($request_method = &#39;OPTIONS&#39;) {
+      add_header &#39;Access-Control-Allow-Origin&#39; &#39;*&#39;;
+      add_header &#39;Access-Control-Allow-Credentials&#39; &#39;true&#39;;
+      add_header &#39;Access-Control-Allow-Methods&#39; &#39;GET, POST, OPTIONS&#39;;
+      add_header &#39;Access-Control-Allow-Headers&#39; &#39;DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Typ&#39;;
+      add_header &#39;Content-Type&#39; &#39;text/plain charset=UTF-8&#39;;
+      add_header &#39;Content-Length&#39; 0;
+      return 204;
+    }
+
+    add_header &#39;Access-Control-Allow-Origin&#39; &#39;*&#39; always;
+    add_header &#39;Access-Control-Allow-Credentials&#39; &#39;true&#39; always;
+    add_header &#39;Access-Control-Allow-Methods&#39; &#39;GET, POST, OPTIONS&#39; always;
+    add_header &#39;Access-Control-Allow-Headers&#39; &#39;DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Typ&#39; always;
+
+    proxy_redirect off;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_pass http://127.0.0.1:1234;
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To make your life extra difficult, the creators decided you can&amp;rsquo;t use wildcards for &lt;code&gt;Access-Control-Allow-Headers&lt;/code&gt;, enjoy changing this config for any new headers you want to use. Oh, and please don&amp;rsquo;t run this in production, please?&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>NixOS</title>
+          <link>https://jakob.gillich.me/post/2015-11-14-nixos/</link>
+          <pubDate>Sat, 14 Nov 2015 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2015-11-14-nixos/</guid>
+          <description>
+
+&lt;p&gt;After reading about it so many times, I finally tried
+&lt;a href=&#34;https://nixos.org/&#34;&gt;NixOS&lt;/a&gt;. Never heard of it? Definitely check out their web
+site, but if you&amp;rsquo;re not into functional programming, you probably won&amp;rsquo;t
+understand what it is all about. At least I didn&amp;rsquo;t, until I tried it. And it
+blew my mind. But let me break it down for you.&lt;/p&gt;
+
+&lt;h2 id=&#34;nixos:ef02e7022056e1379c60b64c46d6ae0c&#34;&gt;NixOS&lt;/h2&gt;
+
+&lt;p&gt;NixOS is basically a regular Linux distro, it runs on the desktop as well as on
+the server. What makes NixOS special is the way it is configured. The entire
+system is based on a single configuration file at
+&lt;code&gt;/etc/nixos/configuration.nix&lt;/code&gt;. NixOS configuration uses the Nix programming
+language, having programming knowledge is not required, but makes things easier.
+Nix is also a package manager, but more about that later. Unlike configuration
+management tools like Ansible, there is zero state in the NixOS configuration.
+If you remove a service from your NixOS configuration, it is gone, there is no
+uninstall step.&lt;/p&gt;
+
+&lt;p&gt;Traditional configuration management works by checking the system state and
+performing the required actions. For example, installing a service usually goes
+like this:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Manually write the configuration file&lt;/li&gt;
+&lt;li&gt;Ensure required packages are installed&lt;/li&gt;
+&lt;li&gt;Ensure the configuration is correct&lt;/li&gt;
+&lt;li&gt;Ensure the service exists&lt;/li&gt;
+&lt;li&gt;Ensure the service is started&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;On NixOS, you add this to your configuration:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;services.syncthing =
+  { enable = true;
+    user = &amp;quot;jakob&amp;quot;;
+  };
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;There is not installation. enable = true; implies that.&lt;/li&gt;
+&lt;li&gt;There is no separate configuration, it can be done in the NixOS configuration&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;If you install something on NixOS, nothing is actually written to paths like
+&lt;code&gt;/usr&lt;/code&gt; or &lt;code&gt;/bin&lt;/code&gt;. Instead, every package and every service gets its own file
+system structure at &lt;code&gt;/nix/store&lt;/code&gt;. The actual system that you are running is made
+of symlinks to these directories (and to each other). Why is this the best thing
+ever? Whenever you change something in your configuration, NixOS creates a new
+copy of your system, again made of links to &lt;code&gt;/nix/store&lt;/code&gt;. These copies are
+called profiles, and they occupy almost no space. When ever you&amp;rsquo;ve made an error
+in your configuration, you can just roll back to any previous state. This is
+especially great when you&amp;rsquo;ve made changes that result in you being unable to
+boot, you can simply select a older profile during boot.&lt;/p&gt;
+
+&lt;h2 id=&#34;nix:ef02e7022056e1379c60b64c46d6ae0c&#34;&gt;Nix&lt;/h2&gt;
+
+&lt;p&gt;Nix is a package manager and not specific to NixOS, it works on other Linux
+distributions, too. Its syntax is very similar to other package managers,
+installing something is as easy as:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;nix-env -i git
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;But of course it&amp;rsquo;s not exactly like other package managers. First of all, it can
+operate in multi-user-mode, which means you don&amp;rsquo;t need root access to install
+software. Just like NixOS, Nix uses profiles and is able to roll back
+installations.&lt;/p&gt;
+
+&lt;p&gt;Something that is probably unique to Nix is the ability to override packages and
+to create derivatives. By default, Nix uses binary packages, but you can make
+changes to packages and it will then compile the package with your changes. To
+give you a example, you can use this to create your own version of vim with the
+plugins you need. This means you don&amp;rsquo;t have to manually manage and update
+plugins, Nix can do it for you. These overrides can be done in your system-wide
+configuration or on a per-user basis at &lt;code&gt;~/.nixpks/config.nix&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;There is also an incredible amount of packages for NixOS. Often, smaller Linux
+distributions have a hard time maintaining so many packages, but that doesn&amp;rsquo;t
+seem to be the case for Nix. I actually found that there are more packages in
+Nix than there are in Fedora - not based on the raw numbers, but on what I
+use.&lt;/p&gt;
+
+&lt;p&gt;Updates in Nix are based on channels, which are just releases, but you can mix
+them without problems. I&amp;rsquo;ve wanted some newer versions of some packages, so I
+downloaded the &lt;a href=&#34;https://github.com/NixOS/nixpkgs&#34;&gt;nixpkgs&lt;/a&gt; repository and ran:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt; sudo -s nix-env -i rkt -f ~/devel/nixpkgs/
+replacing old ‘rkt-0.8.0’
+installing ‘rkt-0.10.0’
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Yes, it&amp;rsquo;s that simple. What is also simple is installing non-free software.
+Nix has packages for all the drivers and Steam, you just need to allow
+them in your config:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;nixpkgs.config.allowUnfree = true;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;problems:ef02e7022056e1379c60b64c46d6ae0c&#34;&gt;Problems&lt;/h2&gt;
+
+&lt;p&gt;The way NixOS works offers many advantages, but there are problems. Any software
+that relies on standard paths does not work on NixOS. Any bash script that
+uses &lt;code&gt;#!/bin/bash&lt;/code&gt; does not work on NixOS. The included packages have all been
+changed to ensure they work, but anything you get from elsewhere might not work.
+Sometimes when you just need to do this one thing, and do it quickly, NixOS can
+get in the way. I personally just use Docker for anything that&amp;rsquo;s not
+Nix-compatible, but I&amp;rsquo;m also working on packaging a few things. This would be a
+valid reason why there are so many packages - packaging is easy, but you need it
+to really get anything working.&lt;/p&gt;
+
+&lt;p&gt;I also have to say, there is not a lot of information about NixOS on the web.
+I&amp;rsquo;ve been reading more of the nixpkgs source code than anything else, but that&amp;rsquo;s
+not a bad thing. I feel like it&amp;rsquo;s actually a strong point about Nix, the source
+is easy to understand and it is never outdated. But it is really not a system
+where you can just search for you problem and find the answer in some shitty
+forum.&lt;/p&gt;
+
+&lt;p&gt;One example for problems I&amp;rsquo;ve had is setting the GTK+2 theme. It defaults to the
+very ugly Raleigh. But how do you change it? To set the theme, you need to set
+&lt;code&gt;GTK2_RC_FILES&lt;/code&gt; to the theme path - which is hard on Nix because the regular
+&lt;code&gt;/usr/share&lt;/code&gt; doesn&amp;rsquo;t exist. And there wasn&amp;rsquo;t a single mention of this problem on
+the web - which really surprised me. The solution is, you might have guessed it,
+just a little bit of configuration:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;environment.variables =
+  { GTK2_RC_FILES = &amp;quot;${pkgs.gnome_themes_standard}/share/themes/Adwaita/gtk-2.0/gtkrc&amp;quot;; };
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;That being said, there&amp;rsquo;s great documentation that covers a lot of topics.&lt;/p&gt;
+
+&lt;h2 id=&#34;solutions:ef02e7022056e1379c60b64c46d6ae0c&#34;&gt;Solutions&lt;/h2&gt;
+
+&lt;p&gt;I love the way the NixOS configuration works.I can write the configuration once
+and deploy it on any machine or even to a &lt;a href=&#34;https://nixos.org/releases/nixos/15.09/nixos-15.09.500.4702666/manual/index.html#sec-imperative-containers&#34;&gt;container&lt;/a&gt;. Or do it the other way around, run the server configuration in a container
+on your workstation.&lt;/p&gt;
+
+&lt;p&gt;There is also &lt;a href=&#34;https://github.com/NixOS/nixops&#34;&gt;nixops&lt;/a&gt; to deploy NixOS
+machines to the various cloud providers.&lt;/p&gt;
+
+&lt;p&gt;To wrap this up - NixOS is awesome and solves a lot of problems, you should try
+it.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>The state of video production on Linux</title>
+          <link>https://jakob.gillich.me/post/2015-10-22-the-state-of-video-production-on-linux/</link>
+          <pubDate>Thu, 22 Oct 2015 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2015-10-22-the-state-of-video-production-on-linux/</guid>
+          <description>
+
+&lt;p&gt;As a regular listener of the Linux Action Show and similar shows JB produces,
+I&amp;rsquo;ve always known video production on Linux isn&amp;rsquo;t the best experience ever.
+Never would I have imagined how bad things really are.&lt;/p&gt;
+
+&lt;p&gt;I had a really simple task. Record a video, add a few titles, done. Doesn&amp;rsquo;t sound hard,
+does it? Well, apparently it is - on Linux. I tried pretty much all editing software
+that is available:&lt;/p&gt;
+
+&lt;h2 id=&#34;pitivi:4f1727890141fed7c8f053ea41ed3ae8&#34;&gt;Pitivi&lt;/h2&gt;
+
+&lt;p&gt;Pitivi looks like a modern GNOME 3 app, great. Adding titles was very simple,
+unfortunately the app freezes every two clicks and you have to kill it.&lt;/p&gt;
+
+&lt;h2 id=&#34;blender:4f1727890141fed7c8f053ea41ed3ae8&#34;&gt;Blender&lt;/h2&gt;
+
+&lt;p&gt;Blender can actually do video editing, but Fedora does not compile it
+with ffmpeg support, so it supports zero formats. From what I&amp;rsquo;ve read its really
+not the best editing sofware anyway, so I didn&amp;rsquo;t bother building it myself.&lt;/p&gt;
+
+&lt;h2 id=&#34;kdenlive:4f1727890141fed7c8f053ea41ed3ae8&#34;&gt;Kdenlive&lt;/h2&gt;
+
+&lt;p&gt;Great features, but some of them hidden at odd places. It has the potential to be
+really great, but sadly I also experienced a lot of crashes - less than Pitivi,
+but still, does anyone really work with this stuff?&lt;/p&gt;
+
+&lt;h2 id=&#34;openshot:4f1727890141fed7c8f053ea41ed3ae8&#34;&gt;OpenShot&lt;/h2&gt;
+
+&lt;p&gt;OpenShot is missing some basic features any program should
+have. The actual video editing part is ok (yes, I had issues, but not as bad as with the others),
+but you can not ever move any of the files used in a project because they hard code
+a million paths in the project file. Paths to python, the local configuration directory
+and even the desktop. Open a project file after moving anything and OpenShot just crashes right away.&lt;/p&gt;
+
+&lt;h2 id=&#34;lightworks:4f1727890141fed7c8f053ea41ed3ae8&#34;&gt;Lightworks&lt;/h2&gt;
+
+&lt;p&gt;The only closed source app here. They announced they would go open source in 2011,
+I doubt it&amp;rsquo;s ever going to happen. It seems to be a pretty good software overall,
+but the free version is basically demo mode - adding titles requires the paid version,
+which I&amp;rsquo;m not really willing to get at this point.&lt;/p&gt;
+
+&lt;h2 id=&#34;what-now:4f1727890141fed7c8f053ea41ed3ae8&#34;&gt;What now?&lt;/h2&gt;
+
+&lt;p&gt;I was able to get the results I wanted with OpenShot. But I don&amp;rsquo;t think I am ever going
+to use it again because it is impossible to share the project files with anyone.
+Renaming a single folder alone breaks your project, that&amp;rsquo;s just not acceptable.&lt;/p&gt;
+
+&lt;p&gt;I have to agree with others that video production on Linux is nowhere near being
+viable, unless you buy Lightworks. Kdenlive is probably the best open source
+editor out there, but you still have to deal with it crashing, a lot.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Using GitHub Pages and Travis for automatically deployed web sites</title>
+          <link>https://jakob.gillich.me/post/2015-10-11-using-github-pages-and-travis-for-automatically-deployed-web-sites/</link>
+          <pubDate>Sun, 11 Oct 2015 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2015-10-11-using-github-pages-and-travis-for-automatically-deployed-web-sites/</guid>
+          <description>&lt;p&gt;Due to some issues with upgrading my Ghost installation, and considering that I&amp;rsquo;m
+not blogging that much anyway, I&amp;rsquo;ve decided to move this blog over to GitHub Pages
+using the &lt;a href=&#34;https://middlemanapp.com/&#34;&gt;Middleman&lt;/a&gt; static site generator.&lt;/p&gt;
+
+&lt;p&gt;To write a blog post, all I have to do is to push it to GitHub. Travis then builds
+it and pushes it to the &lt;code&gt;gh-pages&lt;/code&gt; branch, from where GitHub serves it, and thanks
+to Cloudflare I even get free SSL. Zero cost, zero maintenance required.&lt;/p&gt;
+
+&lt;p&gt;Now, on how to do that. Obviously you need a GitHub repository that contains your
+sources. This method works with pretty much anything that can output a static site,
+it is not limited to Middleman. Anyway, create your repository and add two files.&lt;/p&gt;
+
+&lt;p&gt;One, &lt;code&gt;.travis.yml&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;language: ruby
+script: bundle exec middleman build
+sudo: false
+after_success: |
+  export PATH=$HOME/.local/bin:$PATH &amp;amp;&amp;amp;
+  [ $TRAVIS_BRANCH = master ] &amp;amp;&amp;amp;
+  [ $TRAVIS_PULL_REQUEST = false ] &amp;amp;&amp;amp;
+  pip install ghp-import --user `whoami` &amp;amp;&amp;amp;
+  ghp-import -n build &amp;amp;&amp;amp;
+  git push -fq https://${TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages
+env:
+  global:
+    - secure: YOUR_ENCRYPTED_GITHUB_TOKEN
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This tells Travis to build the site and uses ghp-import to push the &lt;code&gt;build&lt;/code&gt; folder
+back to GitHub. For authentication, you need a &lt;a href=&#34;https://github.com/settings/tokens&#34;&gt;token from GitHub&lt;/a&gt;,
+then encrypt it using the Travis command line client (&lt;code&gt;gem install travis&lt;/code&gt;) from
+within your repository:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;travis encrypt TOKEN=YOUR_GITHUB_TOKEN
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;One more file you will need is a &lt;code&gt;CNAME&lt;/code&gt; file. It tells GitHub pages that incoming requests
+from your domain belong to that repository. All it contains is your domain, in my case:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;www.jakobgillich.com
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Note that this has to be in the root path of your &lt;code&gt;gh-pages&lt;/code&gt; branch, in the case
+of Middleman you would put it under &lt;code&gt;source/CNAME&lt;/code&gt;. Once you have created these two
+files, you can enable Travis for your repository and your site should be automatically
+deployed to GitHub Pages whenever you push to your repository.&lt;/p&gt;
+
+&lt;p&gt;To set up your domain, go to Cloudflare and add two DNS records to your domain:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;CNAME   @     jgillich.github.io
+CNAME   www   jgillich.github.io
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can also set SSL to Full, Cloudflare will then always communicate with GitHub
+over SSL.&lt;/p&gt;
+
+&lt;p&gt;At this point, we are pretty much done, but one more thing.
+Since we got free SSL from Cloudflare, there is no reason not to use it.
+You can force HTTPS by going to Page Rules and checking
+&lt;em&gt;Always use https&lt;/em&gt; for the URL pattern &lt;code&gt;http://*jakobgillich.com/*&lt;/code&gt;.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>How To Install Redmine on CentOS 7</title>
+          <link>https://jakob.gillich.me/post/2014-08-14-installing-redmine-on-centosrhel-7/</link>
+          <pubDate>Thu, 14 Aug 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2014-08-14-installing-redmine-on-centosrhel-7/</guid>
+          <description>&lt;p&gt;The following describes the process to get the &lt;a href=&#34;http://www.redmine.org/&#34;&gt;Redmine&lt;/a&gt; project management application running on CentOS (RHEL) 7 with a MariaDB database.&lt;/p&gt;
+
+&lt;p&gt;Install dependencies:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# yum install @development mariadb-server mariadb-devel ruby ruby-devel ImageMagick ImageMagick-devel rubygem-rake rubygem-bundler
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Enable and start MariaDB:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# systemctl enable mariadb
+# systemctl start mariadb
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Configure database:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# mysql
+&amp;gt; CREATE DATABASE redmine CHARACTER SET utf8;
+&amp;gt; CREATE USER &#39;redmine&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;my_password&#39;;
+&amp;gt; GRANT ALL PRIVILEGES ON redmine.* TO &#39;redmine&#39;@&#39;localhost&#39;;
+&amp;gt; exit
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Create user to run redmine under:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# adduser redmine
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Download and extract redmine:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# curl -O http://www.redmine.org/releases/redmine-2.5.2.tar.gz
+# tar xvf redmine-2.5.2.tar.gz
+# mv redmine-2.5.2/ /home/redmine/
+# mv /home/redmine/redmine-2.5.2 /home/redmine/redmine
+# chown -R redmine:redmine /home/redmine/redmine
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Setup redmine:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# su redmine
+$ cd ~/redmine
+
+$ cp config/database.yml.example config/database.yml
+$ vi config/database.yml # set user &amp;amp; password for production
+
+$ bundle install --without development test
+$ rake generate_secret_token
+$ RAILS_ENV=production rake db:migrate
+$ # load default data (optional):
+$ RAILS_ENV=production rake redmine:load_default_data
+
+$ mkdir -p tmp tmp/pdf public/plugin_assets
+$ chown -R redmine:redmine files log tmp public/plugin_assets
+$ chmod -R 755 files log tmp public/plugin_assets
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To start redmine with Ruby&amp;rsquo;s own webserver, run:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ ruby script/rails server webrick -e production
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can also add &lt;code&gt;-p PORTNUMBER&lt;/code&gt; to set a port other than the default (3000).
+If you want to access redmine over the network, you have to add a firewall rule:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# firewall-cmd --add-port=3000/tcp --permanent
+# firewall-cmd --reload
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Gulp, Yet Another JavaScript Build Tool</title>
+          <link>https://jakob.gillich.me/post/2014-07-30-gulp-yet-another-javascript-build-tool/</link>
+          <pubDate>Wed, 30 Jul 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2014-07-30-gulp-yet-another-javascript-build-tool/</guid>
+          <description>&lt;p&gt;Grunt is unarguably the most popular build tool for web projects. I like a lot of things about it, but dislike a few others like the configuration syntax and its performance.&lt;/p&gt;
+
+&lt;p&gt;So I&amp;rsquo;ve finally tried &lt;a href=&#34;gulpjs.com&#34;&gt;Gulp&lt;/a&gt; and I&amp;rsquo;m impressed. Porting my Gruntfile was very easy because Gulp is just so simple to use, it took me maybe 30 minutes to port around 80 lines of Grunt configuration, resulting in 60 lines of gulp tasks. And it doesn&amp;rsquo;t just run faster (build time down to 2 seconds from 3 seconds; much more important however is that the watcher reacts faster), it is also more readable.&lt;/p&gt;
+
+&lt;p&gt;There are a few differences of course; Gulp doesn&amp;rsquo;t try to be the best tool for everything. Tasks run in parallel by default, which doesn&amp;rsquo;t work very well when one of them wipes the build directory while another one writes into it. Workarounds are &lt;a href=&#34;https://github.com/OverZealous/run-sequence&#34;&gt;available&lt;/a&gt; though.&lt;/p&gt;
+
+&lt;p&gt;Still, if you know how streams in Node work, you almost know how to use Gulp. Grunt on the other hand is a complex beast that does everything you want, but requires you to have some patience while learning and running it.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>CentOS 7</title>
+          <link>https://jakob.gillich.me/post/2014-07-21-centos-7/</link>
+          <pubDate>Mon, 21 Jul 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2014-07-21-centos-7/</guid>
+          <description>&lt;pre&gt;&lt;code&gt;[root@centos7 ~]# yum install nginx
+No package nginx available.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Yes, they are dead serious. But they ship nginx in &lt;a href=&#34;https://developerblog.redhat.com/2014/06/04/red-hat-software-collections-rhscl-1-1-now-ga/&#34;&gt;RHSCL 1.1&lt;/a&gt;, which sadly isn&amp;rsquo;t available on CentOS yet.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Redirecting Ctrl&#43;A with JavaScript</title>
+          <link>https://jakob.gillich.me/post/2014-04-21-redirecting-ctrla-with-javascript/</link>
+          <pubDate>Mon, 21 Apr 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2014-04-21-redirecting-ctrla-with-javascript/</guid>
+          <description>&lt;p&gt;While building a simple paste service, I wanted to catch &lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;A&lt;/kbd&gt; and redirect it to only select a single element. This does exactly that:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;document.addEventListener(&#39;keydown&#39;, function (event) {
+    if(event.ctrlKey &amp;amp;&amp;amp; event.keyCode == 65) {
+        var range = document.createRange();
+        range.selectNode(document.getElementsByTagName(&#39;main&#39;)[0]);
+        window.getSelection().addRange(range);
+        event.preventDefault();
+    }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;What it does:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Attach a &lt;code&gt;keydown&lt;/code&gt; handler to &lt;code&gt;document&lt;/code&gt; to get all key presses&lt;/li&gt;
+&lt;li&gt;Make sure &lt;kbd&gt;Ctrl&lt;/kbd&gt;+&lt;kbd&gt;A&lt;/kbd&gt; have been pressed (&lt;kbd&gt;A&lt;/kbd&gt; is keyCode 65)&lt;/li&gt;
+&lt;li&gt;Add a selection to an element (&lt;code&gt;&amp;lt;main&amp;gt;&lt;/code&gt; in this case)&lt;/li&gt;
+&lt;li&gt;Call &lt;code&gt;preventDefault&lt;/code&gt; to make sure the event is ignored by the browser&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>StartSSL &amp; Heartbleed</title>
+          <link>https://jakob.gillich.me/post/2014-04-09-startssl-heartbleed/</link>
+          <pubDate>Wed, 09 Apr 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2014-04-09-startssl-heartbleed/</guid>
+          <description>&lt;p&gt;Until today, I used StartCom&amp;rsquo;s &lt;a href=&#34;https://startssl.com/&#34;&gt;StartSSL&lt;/a&gt; for all of my domains. While their web interface is terrible, they are probably the only company that offers free certificates. But in reality, they are not really free (anymore).&lt;/p&gt;
+
+&lt;p&gt;You surely heard of the &lt;a href=&#34;http://heartbleed.com/&#34;&gt;Heartbleed bug&lt;/a&gt;, which allowed anyone to get access to the private certificate keys, making encryption totally useless. Since I was affected by this as well, there were two things I had to do:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Update OpenSSL. By the time I heard about the vulnerability, FreeBSD did already provide an updated port. Easy.&lt;/li&gt;
+&lt;li&gt;Replace all certificates. Turns out that in order to generate a new certificate at StartSSL, the old either has to expire or you have to revoke it - which costs $25.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Considering almost &lt;em&gt;all&lt;/em&gt; of their customers need a new certificate, their free certificate effectively costs $25 now. I guess a lot of their customers aren&amp;rsquo;t willing to pay this fee and will rather risk leaked keys. That&amp;rsquo;s just irresponsible - if you are not able to offer free certificates that are actually secure, then don&amp;rsquo;t.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>MProgress, a slim progress bar written in Vanilla JS</title>
+          <link>https://jakob.gillich.me/post/2014-02-17-mprogress-a-slim-progress-bar-written-in-vanilla-js/</link>
+          <pubDate>Mon, 17 Feb 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2014-02-17-mprogress-a-slim-progress-bar-written-in-vanilla-js/</guid>
+          <description>&lt;p&gt;&lt;a href=&#34;https://github.com/jgillich/mprogress&#34;&gt;MProgress &lt;/a&gt; is a small JavaScript library I&amp;rsquo;ve been working on last weekend. If you know &lt;a href=&#34;https://github.com/rstacruz/nprogress&#34;&gt;NProgress&lt;/a&gt;, my project is a much smaller (70 lines vs. 300+ lines) clone that has no dependency on jQuery. To be fair, it also has fewer features and only works on more modern (ES5-compatible) browsers.&lt;/p&gt;
+
+&lt;p&gt;I have never done a lot of DOM stuff without jQuery so this has been quite interesting. I had to look up how to do really basic things like inserting an element, but I also realized that there are very few cases where I will ever want to prefer &lt;a href=&#34;http://vanilla-js.com/&#34;&gt;Vanilla JS&lt;/a&gt; over jQuery. For example, to remove a element from the DOM, you have to call &lt;code&gt;removeChild&lt;/code&gt; on the parent:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;el.parentNode.removeChild(el);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now the same code in jQuery:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$(el).remove()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The latter is not only shorter, it also easier to understand.&lt;/p&gt;
+
+&lt;p&gt;Anyway, in this case it made a lot of sense to write vanilla JavaScript: You can load it, show a progress bar and then start loading the huge chunk of minified scripts that your application consists of. Users with a slow (mobile) connection will then see a progress bar that informs them the page is being loaded instead of just a blank page.&lt;/p&gt;
+
+&lt;p&gt;To find out more, I&amp;rsquo;ve &lt;a href=&#34;http://jgillich.github.io/mprogress/&#34;&gt;put a small page together&lt;/a&gt; that includes a live example of the library.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Smaller Moment.js</title>
+          <link>https://jakob.gillich.me/post/2014-01-10-smaller-moment-js/</link>
+          <pubDate>Fri, 10 Jan 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2014-01-10-smaller-moment-js/</guid>
+          <description>&lt;p&gt;&lt;a href=&#34;http://momentjs.com/&#34;&gt;Moment.js&lt;/a&gt; is a great JavaScript library that makes working with time a lot easier. I totally love it, but there is one problem: It is huge! That is because &lt;code&gt;moment-with-langs.js&lt;/code&gt; includes all supported languages, and they support &lt;a href=&#34;https://github.com/moment/moment/tree/develop/lang&#34;&gt;a lot of them&lt;/a&gt;!&lt;/p&gt;
+
+&lt;p&gt;Now the good news is that you can build a custom version of Moment.js with just the languages you need. To do this, you need Git, &lt;a href=&#34;http://nodejs.org/&#34;&gt;Node.js&lt;/a&gt; and &lt;a href=&#34;http://gruntjs.com/&#34;&gt;Grunt&lt;/a&gt; - but you have these already, right?&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s start by fetching the repository and installing dependencies:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/moment/moment.git
+cd moment
+git checkout master
+npm install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now simply run the below command with a comma seperated list of all languages you need (German and French in this example) - all languages in the &lt;code&gt;lang/&lt;/code&gt; folder can be embedded.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;grunt release --embed_languages=de,fr
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Note that english is always included and there is not way to change that. When the command finishes, you&amp;rsquo;ll find your custom version at &lt;code&gt;min/moment-with-customlangs.js&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The resulting file size is around 70 KB with a single language - much better than the default 270 KB.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>My First FreeBSD Port</title>
+          <link>https://jakob.gillich.me/post/2013-11-25-my-first-freebsd-port/</link>
+          <pubDate>Mon, 25 Nov 2013 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2013-11-25-my-first-freebsd-port/</guid>
+          <description>
+
+&lt;p&gt;I&amp;rsquo;ve recently created a FreeBSD port for Ghost. Overall, it was a pretty frustrating experience. The biggest issue was that there&amp;rsquo;s just so few resources on the web about it.&lt;/p&gt;
+
+&lt;p&gt;Yes, the official documentation is pretty good. But on the other hand, it actually answered very few of my questions. One example: Ports contain a &lt;em&gt;plist&lt;/em&gt; file that lists all files that belong to it. There is documentation about it and it also has a section about &lt;a href=&#34;http://www.freebsd.org/doc/en_US.ISO8859-1/books/porters-handbook/plist-dynamic.html&#34;&gt;dynamic plists&lt;/a&gt;. It tells you when you can use a dynamic plist, but it&amp;rsquo;s missing any instructions on how you actually implement one.&lt;/p&gt;
+
+&lt;p&gt;Since FreeBSD is not as popular as Linux, there are &lt;strong&gt;a lot&lt;/strong&gt; less forum/blog posts and mailing list entries. You really can&amp;rsquo;t blame FreeBSD for that, but it makes finding solutions a lot harder. That&amp;rsquo;s also one of the reasons why I&amp;rsquo;m writing this.&lt;/p&gt;
+
+&lt;p&gt;But there is one thing that has helped me a lot: &lt;strong&gt;Reading other ports&lt;/strong&gt;. You will gain a lot from that as most ports are written by experienced contributors. And if you struggle too much, there are a lot of helpful people hanging around on the forums and mailing lists.&lt;/p&gt;
+
+&lt;h3 id=&#34;challenges:baf6692ef281c767a9a73cb55100b663&#34;&gt;Challenges&lt;/h3&gt;
+
+&lt;p&gt;There were a few challenges I had to face. Once I even fixed a issue by switching to a fresh jail and abandoning the old. So please - if you are a newbie, use a jail so you don&amp;rsquo;t mess up your production system!&lt;/p&gt;
+
+&lt;h4 id=&#34;extract-to-subdirectory:baf6692ef281c767a9a73cb55100b663&#34;&gt;Extract to Subdirectory&lt;/h4&gt;
+
+&lt;p&gt;The Ghost source code is a zip file that contains no sub folder. Doesn&amp;rsquo;t sound like a big deal, right? Actually, it is. If the source code extracts directly into &lt;code&gt;${WRKDIR}&lt;/code&gt;, it is pretty hard moving it into &lt;code&gt;${STAGEDIR}&lt;/code&gt; without specifying every single file because the latter directory is inside the former.&lt;/p&gt;
+
+&lt;p&gt;But this can be solved by using a custom &lt;code&gt;do-extract&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;do-extract:
+    ${MKDIR} ${WRKSRC}
+    ${LOCALBASE}/bin/unzip -d ${WRKSRC} ${DISTDIR}/${DISTFILES}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;set-correct-permissions:baf6692ef281c767a9a73cb55100b663&#34;&gt;Set correct permissions&lt;/h4&gt;
+
+&lt;p&gt;After extracting the files, they were set to &lt;code&gt;100&lt;/code&gt;. Not very useful, but using &lt;code&gt;@mode 755&lt;/code&gt; in the &lt;code&gt;plist&lt;/code&gt; fixed it. You can also use &lt;code&gt;@owner somebody&lt;/code&gt; and &lt;code&gt;@group somegroup&lt;/code&gt; if you want to.&lt;/p&gt;
+
+&lt;h4 id=&#34;dynamic-plist:baf6692ef281c767a9a73cb55100b663&#34;&gt;Dynamic plist&lt;/h4&gt;
+
+&lt;p&gt;Implementing a dynamic plist wasn&amp;rsquo;t that hard. You simply need to specify &lt;code&gt;PLIST= ${WRKDIR}/plist&lt;/code&gt; and then generate this file in the &lt;code&gt;pre-install&lt;/code&gt; target like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd ${WRKSRC}; ${FIND} . -type f | cut -c2- \
+    | ${SED} &#39;s|^|www/ghost|&#39; \
+    | ${SORT} -r &amp;gt;&amp;gt; ${PLIST}
+${ECHO_CMD} &amp;quot;@comment directories&amp;quot; &amp;gt;&amp;gt; ${PLIST}
+cd ${WRKSRC}; ${FIND} . -type d | cut -c2- \
+    | ${SED} &#39;s|^|@dirrm www/ghost|&#39; \
+    | ${SORT} -r &amp;gt;&amp;gt; ${PLIST}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This uses find to get a list of files, corrects the path and appends them to the plist. That&amp;rsquo;s all you have to do.&lt;/p&gt;
+
+&lt;h3 id=&#34;learn-from-me:baf6692ef281c767a9a73cb55100b663&#34;&gt;Learn from me&lt;/h3&gt;
+
+&lt;p&gt;You can find the full code of my port in the &lt;a href=&#34;https://github.com/TryGhost/Ghost-Config/tree/master/freebsd/ghost&#34;&gt;Ghost-Config&lt;/a&gt; repository. Feel free to check it out, study it and send me your improvements.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Automated Backups on FreeBSD</title>
+          <link>https://jakob.gillich.me/post/2013-10-22-automated-backups-on-freebsd/</link>
+          <pubDate>Tue, 22 Oct 2013 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2013-10-22-automated-backups-on-freebsd/</guid>
+          <description>
+
+&lt;p&gt;I recently had to think about a backup strategy. The FreeBSD manual &lt;a href=&#34;http://www.freebsd.org/doc/en/books/handbook/backup-basics.html&#34;&gt;has an entry&lt;/a&gt; describing the method I used to use in the past:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;h3 id=&#34;19-10-6-do-nothing:a2e6c96426785eaa733abf9b7c2cf5a9&#34;&gt;19.10.6. Do Nothing&lt;/h3&gt;
+
+&lt;p&gt;“Do nothing” is not a computer program, but it is the most widely used backup strategy. There are no initial costs. There is no backup schedule to follow. Just say no. If something happens to your data, grin and bear it!&lt;/p&gt;
+
+&lt;p&gt;If your time and data is worth little to nothing, then “Do nothing” is the most suitable backup program for the computer. But beware, FreeBSD is a useful tool and over time it can be used to create a valuable collection of files.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;To mount my backup space at Hetzner automatically, I used Samba and this fstab entry:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//u12345@your-backup.de/backup /mnt/backup smbfs rw,late,-N,-I188.40.5.173
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;There is a post on the FreeBSD forums about this that I can&amp;rsquo;t find anymore, but the missing space between the &lt;code&gt;-I&lt;/code&gt; option and the IP address is not a typo!&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;-N&lt;/code&gt; option tells Samba to not ask for a password so you need to add it to the &lt;code&gt;/etc/nsmb.conf&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[YOUR-BACKUP.DE:U12345]
+password=yourpassword
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Both the hostname and the username must be in uppercase!&lt;/p&gt;
+
+&lt;p&gt;The recommended tools for doing backups are &lt;code&gt;dump&lt;/code&gt; (creates backups) and &lt;code&gt;restore&lt;/code&gt; (restores backups).&lt;/p&gt;
+
+&lt;p&gt;Dump can create full and incremental backups. Unlike rsync, it will only backup mountpoints (aka devices), not directories. If you need more flexibility, you should take a look at rsync instead.&lt;/p&gt;
+
+&lt;p&gt;To do incremental backups, dump uses so called &lt;em&gt;dump levels&lt;/em&gt;. Here is the explanation from the manpage:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;A level 0, full backup, guarantees the entire file
+system is copied (but see also the -h option below). A level number above 0, incremental backup, tells dump to copy all files new or modified since the last dump of any lower level. The default level is 0.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;What this means is that dump stores a date when a backup finished and which dump level has been used and uses these to do further incremental backups. Here is how I do my automatic backups via cron:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;0 4 * * 0 /sbin/dump -0uLa -f /mnt/backup/root0 /
+0 4 * * 1 /sbin/dump -1uLa -f /mnt/backup/root1 /
+0 4 * * 2 /sbin/dump -2uLa -f /mnt/backup/root2 /
+0 4 * * 3 /sbin/dump -3uLa -f /mnt/backup/root3 /
+0 4 * * 4 /sbin/dump -4uLa -f /mnt/backup/root4 /
+0 4 * * 5 /sbin/dump -5uLa -f /mnt/backup/root5 /
+0 4 * * 6 /sbin/dump -6uLa -f /mnt/backup/root6 /
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Each day of a week at 4 a.m., this will execute dump.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;On Sundays (day 0), it will do a full backup (dump level 0) of / and store it at &lt;code&gt;/mnt/backup/root0&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;On Mondays (day 1), it will do a incremental level 1 backup including  all changes since dump level 0 and store it at &lt;code&gt;/mnt/backup/root1&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;On Tuesdays (day 1), it will do a incremental level 2 backup including  all changes since dump level 1 and store it at &lt;code&gt;/mnt/backup/root2&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&amp;hellip;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;So what you get is a full backup every sunday and backups including the daily changes every other day of the week.&lt;/p&gt;
+
+&lt;p&gt;About the options:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;u: Tells dump to update the dumpfile at &lt;code&gt;/etc/dumpdates&lt;/code&gt; automatically. Required for incremental backups to work.&lt;/li&gt;
+&lt;li&gt;L: Tells dump that it is working on a live file system so it will create a snapshot.&lt;/li&gt;
+&lt;li&gt;a: &lt;a href=&#34;http://lists.freebsd.org/pipermail/freebsd-questions/2007-July/153164.html&#34;&gt;Do not ask any questions&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;f: Target file.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For a complete explanation of these options, read the dump manpage.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Fix your JAVA_HOME</title>
+          <link>https://jakob.gillich.me/post/2013-10-19-fix-your-java_home/</link>
+          <pubDate>Sat, 19 Oct 2013 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2013-10-19-fix-your-java_home/</guid>
+          <description>&lt;p&gt;Trying to run one of JetBrain&amp;rsquo;s IDE&amp;rsquo;s (WebStorm in my case), you might get this error message:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ERROR: Cannot start WebStorm
+No JDK found. Please validate either WEBIDE_JDK, JDK_HOME or JAVA_HOME environment variable points to valid JDK installation.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It is crazy how long it took me to find a solution for this. Most answers on the web are talking about Oracle&amp;rsquo;s proprietary Java; I wanted to run it using OpenJDK instead.&lt;/p&gt;
+
+&lt;p&gt;But thanks to &lt;a href=&#34;http://stackoverflow.com/a/11542973/941764&#34;&gt;this&lt;/a&gt; StackOverflow answer I was able to solve it. A pretty universal way to set $JAVA_HOME is this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;JAVA_HOME=$(readlink -f /usr/bin/java | sed &amp;quot;s:bin/java::&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;On Fedora, $JAVA_HOME would now look like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ echo $JAVA_HOME
+/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.60-2.4.2.7.fc19.x86_64/jre/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;But this path will change all the time.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>ownCloud Client Configuration Folder</title>
+          <link>https://jakob.gillich.me/post/2013-10-19-owncloud-client-configuration-folder/</link>
+          <pubDate>Sat, 19 Oct 2013 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2013-10-19-owncloud-client-configuration-folder/</guid>
+          <description>&lt;p&gt;Every time ownCloud screws up, I have to delete the configuration files to reset it completely. The location where these files are stored isn&amp;rsquo;t really documented anywhere, so here is the path you have to rm:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;~/.local/share/data/ownCloud
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Ghost on FreeBSD</title>
+          <link>https://jakob.gillich.me/post/2013-10-14-ghost-on-freebsd/</link>
+          <pubDate>Mon, 14 Oct 2013 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2013-10-14-ghost-on-freebsd/</guid>
+          <description>
+
+&lt;p&gt;&lt;a href=&#34;http://ghost.org&#34;&gt;Ghost&lt;/a&gt; has been released to the public today. Finally! I could not try it earlier because I wasn&amp;rsquo;t one of the Kickstarter backers. When I discovered the project, it was already way over their initial funding goal so I saw no reason to fund it.&lt;/p&gt;
+
+&lt;p&gt;If you never heard of it: It is a simple blogging software. Similar to Wordpress, but it looks better, has fewer features and it&amp;rsquo;s written in Node.js instead of PHP.&lt;/p&gt;
+
+&lt;p&gt;After trying it out locally, I installed it in a jail on my FreeNAS box. The installation is not completely straightforward, here is what you have to do:&lt;/p&gt;
+
+&lt;h4 id=&#34;1-install-the-necessary-dependencies:de02a8f5185e1dd51d89e047d0203376&#34;&gt;1. Install the necessary dependencies&lt;/h4&gt;
+
+&lt;p&gt;Here is a list of all dependencies that you need:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;www/node&lt;/li&gt;
+&lt;li&gt;www/npm&lt;/li&gt;
+&lt;li&gt;databases/sqlite3&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Install them from the ports collection or the package manager of your choice.&lt;/p&gt;
+
+&lt;p&gt;Ghost requires the node-sqlite3 package, and that one caused me some problems. To build and install it properly, we will need the node-gyp package from npm:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;npm install node-gyp -g
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;2-get-ghost-and-install-more-dependencies:de02a8f5185e1dd51d89e047d0203376&#34;&gt;2. Get Ghost and install more dependencies&lt;/h4&gt;
+
+&lt;p&gt;Now we have to download and extract Ghost. Go to the &lt;a href=&#34;http://ghost.org/download/&#34;&gt;download page&lt;/a&gt; and copy the latest download link, I will not keep the one below up to date.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;fetch http://ghost.org/zip/ghost-0.3.2.zip
+mkdir ghost
+unzip -d ghost ghost-0.3.2.zip
+cd ghost
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This step is different from the official instructions. We have to explicitly pass the path of our sqlite3 installation to &lt;code&gt;npm install&lt;/code&gt; (all third-party software is installed to /usr/local by default on FreeBSD).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;npm install --production --sqlite=/usr/local
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;3-adjust-configuration:de02a8f5185e1dd51d89e047d0203376&#34;&gt;3. Adjust Configuration&lt;/h4&gt;
+
+&lt;p&gt;We are almost done! Before running it, you have to create and open the &lt;code&gt;config.js&lt;/code&gt; with your favorite text editor.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cp config.example.js config.js
+ee config.js
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then find the &lt;code&gt;production&lt;/code&gt; section and set these properties to whatever you want:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;url&lt;/li&gt;
+&lt;li&gt;host&lt;/li&gt;
+&lt;li&gt;port&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;url&lt;/code&gt; is used for all frontend links, very useful if you run Ghost through a reverse proxy.&lt;/p&gt;
+
+&lt;p&gt;Now we are ready to run it using the &lt;code&gt;npm start&lt;/code&gt; command from within the Ghost directory. If you plan to run it in production mode, execute &lt;code&gt;setenv NODE_ENV production&lt;/code&gt; first.&lt;/p&gt;
+
+&lt;h4 id=&#34;4-gain-control:de02a8f5185e1dd51d89e047d0203376&#34;&gt;4. Gain Control&lt;/h4&gt;
+
+&lt;p&gt;Forever is a nice tool that keeps your node processes running, well, forever. It&amp;rsquo;s like the &lt;code&gt;service&lt;/code&gt; command for Node.js. Thanks to npm, installation is easy:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;npm install -g forever
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To manage the process, I wrote a little service script. Put this at &lt;code&gt;/usr/local/etc/rc.d/ghost&lt;/code&gt; and make it executeable:&lt;/p&gt;
+
+&lt;script src=&#34;https://gist.github.com/jgillich/7045531.js&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;Before the above script will work, you also have to do this:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Add the &lt;code&gt;ghost&lt;/code&gt; user&lt;/li&gt;
+&lt;li&gt;Give the user write access to the database: &lt;code&gt;chown -R ghost content/data/&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Same for the logfile: &lt;code&gt;chmod 777 /var/log/ghost&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Install security/sudo&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Now you have a service that integrates very well and in a secure way with the rest of the system:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Autostart on boot: Add &lt;code&gt;ghost_enable=&amp;quot;YES&amp;quot;&lt;/code&gt; to your &lt;code&gt;/etc/rc.conf&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Start manually: &lt;code&gt;service ghost [one]start&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Stop manually: &lt;code&gt;service ghost [one]stop&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Logs are stored at &lt;code&gt;/var/log/ghost&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I will probably create a port that will automate the whole process soon (just need to learn how to do it first). And please note that the one above is the first service script I ever wrote, it may break your system! If you know how to improve it, please leave a comment.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>HTTPS Almost Everywhere</title>
+          <link>https://jakob.gillich.me/post/2013-10-14-apache-force-encryption-everywhere/</link>
+          <pubDate>Mon, 14 Oct 2013 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>https://jakob.gillich.me/post/2013-10-14-apache-force-encryption-everywhere/</guid>
+          <description>&lt;p&gt;I have a free SSL certificate from &lt;a href=&#34;https://startssl.com/&#34;&gt;StartSSL&lt;/a&gt; for all my domains. To force HTTPS everywhere in Apache&amp;rsquo;s httpd, I use the following virtual host:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;VirtualHost _default_:80&amp;gt;
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+&amp;lt;/VirtualHost&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Because it is &lt;code&gt;_default_&lt;/code&gt;, we don&amp;rsquo;t need a server name and it is still possible to create regular HTTP hosts by adding another virtual host. And all parameters are of course preserved when redirecting.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

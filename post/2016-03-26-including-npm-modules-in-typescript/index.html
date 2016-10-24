@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Including npm modules in TypeScript &middot; Jakob Gillich
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Minimalist, developer. <a href="mailto:jakob@gillich.me">Say hi</a></p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="/">Home</a>
+    <a class="sidebar-nav-item " href="/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item">
+    <p>All content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Jakob Gillich</a>
+            <small>Personal blog</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Including npm modules in TypeScript</h1>
+  <span class="post-date">Mar 26 2016</span>
+  <p>I&rsquo;ve written quite a lot JavaScript and Node.js code over the last few years.
+Unlike many, I think it&rsquo;s a great language and server platform. However, the
+lack of static types does regularly introduce errors that are hard to find.
+That&rsquo;s why I decided to use <a href="http://typescriptlang.org/">TypeScript</a> for a new
+project.</p>
+
+<p>The website describes it as a <em>superset</em> of JavaScript, with typings being
+optional. I was quite surprised to find out this is not true, at all. I started
+by installing TypeScript, a webpack loader, and react with npm. Now, we should
+be able to do this:</p>
+
+<pre><code>import * as React from &quot;react&quot;;
+</code></pre>
+
+<pre><code>ERROR in ./src/main.ts
+(2,24): error TS2307: Cannot find module 'react'.
+</code></pre>
+
+<p>Uh, what? I just installed it, why can&rsquo;t the compiler find it? After doing a bit
+of reading (the official docs are severely lacking in that regard, I have to
+say), I found out that typings are actually not optional. There are two
+solutions:</p>
+
+<ol>
+<li><p>Install the <code>require</code> typings and load modules with <code>require()</code>. This works
+because the typings for <code>require</code> define it as returning <code>any</code>, therefore
+disabling all type checks for it.</p></li>
+
+<li><p>Install the typings for <code>react</code>. This is the recommended approach, however
+the typings have to be created by hand, therefore they don&rsquo;t exist for all
+modules.</p></li>
+</ol>
+
+<p>How do you install typings, you might ask. There is a project with the same
+name that provides a package manager for them, similar to npm. Install it
+via <code>npm install -g typings</code>, then you can install type definitions using
+<code>typings install react --save --ambient</code>. <code>--save</code> stores them in the
+<code>typings.json</code>, which is like your <code>package.json</code> but for typings. <code>--ambient</code>
+is required for modules that export to the global namespace - I don&rsquo;t yet
+know why it&rsquo;s required for <code>react</code>, only that it won&rsquo;t work without.</p>
+
+<p>After you&rsquo;ve installed them, you need to add one special line to the top of
+your code:</p>
+
+<pre><code>/// &lt;reference path='../typings/browser.d.ts'/&gt;
+</code></pre>
+
+<p>The path is relative from your source file and tells TypeScript to load
+the definitions that you&rsquo;ve installed via <code>typings</code>. Note that <code>browser.d.ts</code>
+is for browser projects, if you target Node.js, use <code>main.d.ts</code> instead.</p>
+
+<p>Initially, I also had issues with multiple definitions. This is because
+TypeScript, by default, loads all <code>.ts</code> files. What we usually want is just a
+single file that includes the rest of our code. To fix this, we need to create
+a <code>tsconfig.json</code> in our project root:</p>
+
+<pre><code>{
+  &quot;files&quot;: [
+    &quot;src/main.ts&quot;
+  ]
+}
+</code></pre>
+
+<p>Now, finally, we are able to use React from TypeScript. I feel like there is a
+lot that needs to be improved here, starting with the compiler error message.</p>
+
+<p>Now, what if there are no typings for the module you&rsquo;d like to use? As I
+mentioned earlier, you can use <code>require()</code> to completely bypass type checks
+by installing the typings for it and then doing:</p>
+
+<pre><code>import h = require('react-hyperscript-helpers');
+</code></pre>
+
+<p>Unfortunately, this is not possible with ES6 modules, so we don&rsquo;t get the
+ability to destructure during import. I think that creating typings is what you
+should be doing instead, that&rsquo;s why you&rsquo;re using TypeScript in the first
+place, right?</p>
+
+<p>The <a href="http://www.typescriptlang.org/docs/handbook/writing-definition-files.html">Handbook</a>
+tells you how to do it, here&rsquo;s just a quick example, my <code>react-hyperscript-helpers.d.ts</code>:</p>
+
+<pre><code>declare namespace ReactHyperscriptHelpers {
+  function h1(text: string): any;
+}
+
+declare module &quot;react-hyperscript-helpers&quot; {
+  export = ReactHyperscriptHelpers;
+}
+</code></pre>
+
+<p>As you can see, it defines a single function <code>h1</code> that takes a <code>string</code> and
+returns <code>any</code>. Now, we can do this:</p>
+
+<pre><code>/// &lt;reference path='./react-hyperscript-helpers.d.ts'/&gt;
+import { h1 } from &quot;react-hyperscript-helpers&quot;;
+
+ReactDOM.render(
+  h1('Hello, World!'),
+  document.body
+);
+</code></pre>
+
+<p>I don&rsquo;t think it ever took me longer to get a Hello World up and running.
+Microsoft, please make this stuff easier to get started with.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

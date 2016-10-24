@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Self-contained development environments using Nix &middot; Jakob Gillich
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Minimalist, developer. <a href="mailto:jakob@gillich.me">Say hi</a></p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="/">Home</a>
+    <a class="sidebar-nav-item " href="/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item">
+    <p>All content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Jakob Gillich</a>
+            <small>Personal blog</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Self-contained development environments using Nix</h1>
+  <span class="post-date">Mar 22 2016</span>
+  <p>Nix is a package manager that works a bit differently. It allows you to install
+any version of any package alongside each other. Since you can&rsquo;t, for example,
+have multiple <code>python</code> executables, <code>nix-shell</code> is used to give you a
+environment with all the dependencies you need.</p>
+
+<p>Let&rsquo;s say you have a Rust project. You create a <code>default.nix</code> in your project
+directory:</p>
+
+<pre><code>with import &lt;nixpkgs&gt; { };
+
+rustPlatform.buildRustPackage rec {
+  name = &quot;my-project-${version}&quot;;
+  version = &quot;0.1&quot;;
+  src = ./.;
+  buildInputs = [ openssl pkgconfig ];
+  depsSha256 = &quot;160ar8jfzhhrg5rk3rjq3sc5mmrakysynrpr4nfgqkbq952il2zk&quot;;
+}
+</code></pre>
+
+<p>This defines a Rust package in the current directory, with the <code>openssl</code>
+dependency. Note that <code>buildInputs</code> only lists native dependencies, your
+crates are specified in your <code>Cargo.toml</code> as usual.</p>
+
+<p>To build a package out of this, you can run <code>nix-build default.nix</code>
+(or just <code>nix-build .</code>). However, this will always build the project from a
+clean state, which we don&rsquo;t really want during development. So instead, we do
+<code>nix-shell .</code>, which puts us in a new shell that not only has <code>openssl</code> and
+<code>pkgconfig</code>, but also all dependencies of <code>rustPlatform</code>, like <code>rustc</code> and
+<code>cargo</code>.</p>
+
+<p>Now, what if we need a database? Well, we&rsquo;d have to install that through the
+usual channels - right? Wrong! This is where things get really interesting: Nix
+has packages for pretty much all databases, and nix-shell allows us to run
+custom commands when we enter a shell. This property is called <code>shellHook</code>:</p>
+
+<pre><code>rustPlatform.buildRustPackage rec {
+  name = &quot;my-project-${version}&quot;;
+  // ...
+  shellHook = ''
+    ${couchdb}/bin/couchdb -a couchdb.ini &amp;
+  '';
+}
+</code></pre>
+
+<p>This would start CouchDB every time we enter our development
+environment. And if you&rsquo;re still using Make to run your build commands, consider
+specifying them in your <code>shellHook</code> instead:</p>
+
+<pre><code>shellHook = ''
+  function ci {
+    cargo build
+    cargo test
+  }
+'';
+</code></pre>
+
+<p>You can of course use Nix on your continuous integration platform, like Travis,
+by setting the <code>script</code> to:</p>
+
+<pre><code>nix-shell default.nix --command ci
+</code></pre>
+
+<p>By using Nix, the environment on Travis is exactly the same as the one you use
+locally. No longer will you have issues because Travis hasn&rsquo;t updated their
+sqlite version in the last 5 years.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Jakob Gillich &middot; Personal blog
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Minimalist, developer. <a href="mailto:jakob@gillich.me">Say hi</a></p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item  active " href="/">Home</a>
+    <a class="sidebar-nav-item " href="/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item">
+    <p>All content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Jakob Gillich</a>
+            <small>Personal blog</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+
+
+
+<div class="posts">
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2015-10-22-the-state-of-video-production-on-linux/">The state of video production on Linux</a></h1>
+        <span class="post-date">Oct 22 2015</span>
+        
+
+<p>As a regular listener of the Linux Action Show and similar shows JB produces,
+I&rsquo;ve always known video production on Linux isn&rsquo;t the best experience ever.
+Never would I have imagined how bad things really are.</p>
+
+<p>I had a really simple task. Record a video, add a few titles, done. Doesn&rsquo;t sound hard,
+does it? Well, apparently it is - on Linux. I tried pretty much all editing software
+that is available:</p>
+
+<h2 id="pitivi:4f1727890141fed7c8f053ea41ed3ae8">Pitivi</h2>
+
+<p>Pitivi looks like a modern GNOME 3 app, great. Adding titles was very simple,
+unfortunately the app freezes every two clicks and you have to kill it.</p>
+
+<h2 id="blender:4f1727890141fed7c8f053ea41ed3ae8">Blender</h2>
+
+<p>Blender can actually do video editing, but Fedora does not compile it
+with ffmpeg support, so it supports zero formats. From what I&rsquo;ve read its really
+not the best editing sofware anyway, so I didn&rsquo;t bother building it myself.</p>
+
+<h2 id="kdenlive:4f1727890141fed7c8f053ea41ed3ae8">Kdenlive</h2>
+
+<p>Great features, but some of them hidden at odd places. It has the potential to be
+really great, but sadly I also experienced a lot of crashes - less than Pitivi,
+but still, does anyone really work with this stuff?</p>
+
+<h2 id="openshot:4f1727890141fed7c8f053ea41ed3ae8">OpenShot</h2>
+
+<p>OpenShot is missing some basic features any program should
+have. The actual video editing part is ok (yes, I had issues, but not as bad as with the others),
+but you can not ever move any of the files used in a project because they hard code
+a million paths in the project file. Paths to python, the local configuration directory
+and even the desktop. Open a project file after moving anything and OpenShot just crashes right away.</p>
+
+<h2 id="lightworks:4f1727890141fed7c8f053ea41ed3ae8">Lightworks</h2>
+
+<p>The only closed source app here. They announced they would go open source in 2011,
+I doubt it&rsquo;s ever going to happen. It seems to be a pretty good software overall,
+but the free version is basically demo mode - adding titles requires the paid version,
+which I&rsquo;m not really willing to get at this point.</p>
+
+<h2 id="what-now:4f1727890141fed7c8f053ea41ed3ae8">What now?</h2>
+
+<p>I was able to get the results I wanted with OpenShot. But I don&rsquo;t think I am ever going
+to use it again because it is impossible to share the project files with anyone.
+Renaming a single folder alone breaks your project, that&rsquo;s just not acceptable.</p>
+
+<p>I have to agree with others that video production on Linux is nowhere near being
+viable, unless you buy Lightworks. Kdenlive is probably the best open source
+editor out there, but you still have to deal with it crashing, a lot.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2015-10-11-using-github-pages-and-travis-for-automatically-deployed-web-sites/">Using GitHub Pages and Travis for automatically deployed web sites</a></h1>
+        <span class="post-date">Oct 11 2015</span>
+        <p>Due to some issues with upgrading my Ghost installation, and considering that I&rsquo;m
+not blogging that much anyway, I&rsquo;ve decided to move this blog over to GitHub Pages
+using the <a href="https://middlemanapp.com/">Middleman</a> static site generator.</p>
+
+<p>To write a blog post, all I have to do is to push it to GitHub. Travis then builds
+it and pushes it to the <code>gh-pages</code> branch, from where GitHub serves it, and thanks
+to Cloudflare I even get free SSL. Zero cost, zero maintenance required.</p>
+
+<p>Now, on how to do that. Obviously you need a GitHub repository that contains your
+sources. This method works with pretty much anything that can output a static site,
+it is not limited to Middleman. Anyway, create your repository and add two files.</p>
+
+<p>One, <code>.travis.yml</code>:</p>
+
+<pre><code>language: ruby
+script: bundle exec middleman build
+sudo: false
+after_success: |
+  export PATH=$HOME/.local/bin:$PATH &amp;&amp;
+  [ $TRAVIS_BRANCH = master ] &amp;&amp;
+  [ $TRAVIS_PULL_REQUEST = false ] &amp;&amp;
+  pip install ghp-import --user `whoami` &amp;&amp;
+  ghp-import -n build &amp;&amp;
+  git push -fq https://${TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages
+env:
+  global:
+    - secure: YOUR_ENCRYPTED_GITHUB_TOKEN
+</code></pre>
+
+<p>This tells Travis to build the site and uses ghp-import to push the <code>build</code> folder
+back to GitHub. For authentication, you need a <a href="https://github.com/settings/tokens">token from GitHub</a>,
+then encrypt it using the Travis command line client (<code>gem install travis</code>) from
+within your repository:</p>
+
+<pre><code>travis encrypt TOKEN=YOUR_GITHUB_TOKEN
+</code></pre>
+
+<p>One more file you will need is a <code>CNAME</code> file. It tells GitHub pages that incoming requests
+from your domain belong to that repository. All it contains is your domain, in my case:</p>
+
+<pre><code>www.jakobgillich.com
+</code></pre>
+
+<p>Note that this has to be in the root path of your <code>gh-pages</code> branch, in the case
+of Middleman you would put it under <code>source/CNAME</code>. Once you have created these two
+files, you can enable Travis for your repository and your site should be automatically
+deployed to GitHub Pages whenever you push to your repository.</p>
+
+<p>To set up your domain, go to Cloudflare and add two DNS records to your domain:</p>
+
+<pre><code>CNAME   @     jgillich.github.io
+CNAME   www   jgillich.github.io
+</code></pre>
+
+<p>You can also set SSL to Full, Cloudflare will then always communicate with GitHub
+over SSL.</p>
+
+<p>At this point, we are pretty much done, but one more thing.
+Since we got free SSL from Cloudflare, there is no reason not to use it.
+You can force HTTPS by going to Page Rules and checking
+<em>Always use https</em> for the URL pattern <code>http://*jakobgillich.com/*</code>.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2014-08-14-installing-redmine-on-centosrhel-7/">How To Install Redmine on CentOS 7</a></h1>
+        <span class="post-date">Aug 14 2014</span>
+        <p>The following describes the process to get the <a href="http://www.redmine.org/">Redmine</a> project management application running on CentOS (RHEL) 7 with a MariaDB database.</p>
+
+<p>Install dependencies:</p>
+
+<pre><code># yum install @development mariadb-server mariadb-devel ruby ruby-devel ImageMagick ImageMagick-devel rubygem-rake rubygem-bundler
+</code></pre>
+
+<p>Enable and start MariaDB:</p>
+
+<pre><code># systemctl enable mariadb
+# systemctl start mariadb
+</code></pre>
+
+<p>Configure database:</p>
+
+<pre><code># mysql
+&gt; CREATE DATABASE redmine CHARACTER SET utf8;
+&gt; CREATE USER 'redmine'@'localhost' IDENTIFIED BY 'my_password';
+&gt; GRANT ALL PRIVILEGES ON redmine.* TO 'redmine'@'localhost';
+&gt; exit
+</code></pre>
+
+<p>Create user to run redmine under:</p>
+
+<pre><code># adduser redmine
+</code></pre>
+
+<p>Download and extract redmine:</p>
+
+<pre><code># curl -O http://www.redmine.org/releases/redmine-2.5.2.tar.gz
+# tar xvf redmine-2.5.2.tar.gz
+# mv redmine-2.5.2/ /home/redmine/
+# mv /home/redmine/redmine-2.5.2 /home/redmine/redmine
+# chown -R redmine:redmine /home/redmine/redmine
+</code></pre>
+
+<p>Setup redmine:</p>
+
+<pre><code># su redmine
+$ cd ~/redmine
+
+$ cp config/database.yml.example config/database.yml
+$ vi config/database.yml # set user &amp; password for production
+
+$ bundle install --without development test
+$ rake generate_secret_token
+$ RAILS_ENV=production rake db:migrate
+$ # load default data (optional):
+$ RAILS_ENV=production rake redmine:load_default_data
+
+$ mkdir -p tmp tmp/pdf public/plugin_assets
+$ chown -R redmine:redmine files log tmp public/plugin_assets
+$ chmod -R 755 files log tmp public/plugin_assets
+</code></pre>
+
+<p>To start redmine with Ruby&rsquo;s own webserver, run:</p>
+
+<pre><code>$ ruby script/rails server webrick -e production
+</code></pre>
+
+<p>You can also add <code>-p PORTNUMBER</code> to set a port other than the default (3000).
+If you want to access redmine over the network, you have to add a firewall rule:</p>
+
+<pre><code># firewall-cmd --add-port=3000/tcp --permanent
+# firewall-cmd --reload
+</code></pre>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2014-07-30-gulp-yet-another-javascript-build-tool/">Gulp, Yet Another JavaScript Build Tool</a></h1>
+        <span class="post-date">Jul 30 2014</span>
+        <p>Grunt is unarguably the most popular build tool for web projects. I like a lot of things about it, but dislike a few others like the configuration syntax and its performance.</p>
+
+<p>So I&rsquo;ve finally tried <a href="gulpjs.com">Gulp</a> and I&rsquo;m impressed. Porting my Gruntfile was very easy because Gulp is just so simple to use, it took me maybe 30 minutes to port around 80 lines of Grunt configuration, resulting in 60 lines of gulp tasks. And it doesn&rsquo;t just run faster (build time down to 2 seconds from 3 seconds; much more important however is that the watcher reacts faster), it is also more readable.</p>
+
+<p>There are a few differences of course; Gulp doesn&rsquo;t try to be the best tool for everything. Tasks run in parallel by default, which doesn&rsquo;t work very well when one of them wipes the build directory while another one writes into it. Workarounds are <a href="https://github.com/OverZealous/run-sequence">available</a> though.</p>
+
+<p>Still, if you know how streams in Node work, you almost know how to use Gulp. Grunt on the other hand is a complex beast that does everything you want, but requires you to have some patience while learning and running it.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2014-07-21-centos-7/">CentOS 7</a></h1>
+        <span class="post-date">Jul 21 2014</span>
+        <pre><code>[root@centos7 ~]# yum install nginx
+No package nginx available.
+</code></pre>
+
+<p>Yes, they are dead serious. But they ship nginx in <a href="https://developerblog.redhat.com/2014/06/04/red-hat-software-collections-rhscl-1-1-now-ga/">RHSCL 1.1</a>, which sadly isn&rsquo;t available on CentOS yet.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2014-04-21-redirecting-ctrla-with-javascript/">Redirecting Ctrl&#43;A with JavaScript</a></h1>
+        <span class="post-date">Apr 21 2014</span>
+        <p>While building a simple paste service, I wanted to catch <kbd>Ctrl</kbd>+<kbd>A</kbd> and redirect it to only select a single element. This does exactly that:</p>
+
+<pre><code>document.addEventListener('keydown', function (event) {
+    if(event.ctrlKey &amp;&amp; event.keyCode == 65) {
+        var range = document.createRange();
+        range.selectNode(document.getElementsByTagName('main')[0]);
+        window.getSelection().addRange(range);
+        event.preventDefault();
+    }
+});
+</code></pre>
+
+<p>What it does:</p>
+
+<ul>
+<li>Attach a <code>keydown</code> handler to <code>document</code> to get all key presses</li>
+<li>Make sure <kbd>Ctrl</kbd>+<kbd>A</kbd> have been pressed (<kbd>A</kbd> is keyCode 65)</li>
+<li>Add a selection to an element (<code>&lt;main&gt;</code> in this case)</li>
+<li>Call <code>preventDefault</code> to make sure the event is ignored by the browser</li>
+</ul>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2014-04-09-startssl-heartbleed/">StartSSL &amp; Heartbleed</a></h1>
+        <span class="post-date">Apr 9 2014</span>
+        <p>Until today, I used StartCom&rsquo;s <a href="https://startssl.com/">StartSSL</a> for all of my domains. While their web interface is terrible, they are probably the only company that offers free certificates. But in reality, they are not really free (anymore).</p>
+
+<p>You surely heard of the <a href="http://heartbleed.com/">Heartbleed bug</a>, which allowed anyone to get access to the private certificate keys, making encryption totally useless. Since I was affected by this as well, there were two things I had to do:</p>
+
+<ol>
+<li>Update OpenSSL. By the time I heard about the vulnerability, FreeBSD did already provide an updated port. Easy.</li>
+<li>Replace all certificates. Turns out that in order to generate a new certificate at StartSSL, the old either has to expire or you have to revoke it - which costs $25.</li>
+</ol>
+
+<p>Considering almost <em>all</em> of their customers need a new certificate, their free certificate effectively costs $25 now. I guess a lot of their customers aren&rsquo;t willing to pay this fee and will rather risk leaked keys. That&rsquo;s just irresponsible - if you are not able to offer free certificates that are actually secure, then don&rsquo;t.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2014-02-17-mprogress-a-slim-progress-bar-written-in-vanilla-js/">MProgress, a slim progress bar written in Vanilla JS</a></h1>
+        <span class="post-date">Feb 17 2014</span>
+        <p><a href="https://github.com/jgillich/mprogress">MProgress </a> is a small JavaScript library I&rsquo;ve been working on last weekend. If you know <a href="https://github.com/rstacruz/nprogress">NProgress</a>, my project is a much smaller (70 lines vs. 300+ lines) clone that has no dependency on jQuery. To be fair, it also has fewer features and only works on more modern (ES5-compatible) browsers.</p>
+
+<p>I have never done a lot of DOM stuff without jQuery so this has been quite interesting. I had to look up how to do really basic things like inserting an element, but I also realized that there are very few cases where I will ever want to prefer <a href="http://vanilla-js.com/">Vanilla JS</a> over jQuery. For example, to remove a element from the DOM, you have to call <code>removeChild</code> on the parent:</p>
+
+<pre><code>el.parentNode.removeChild(el);
+</code></pre>
+
+<p>Now the same code in jQuery:</p>
+
+<pre><code>$(el).remove()
+</code></pre>
+
+<p>The latter is not only shorter, it also easier to understand.</p>
+
+<p>Anyway, in this case it made a lot of sense to write vanilla JavaScript: You can load it, show a progress bar and then start loading the huge chunk of minified scripts that your application consists of. Users with a slow (mobile) connection will then see a progress bar that informs them the page is being loaded instead of just a blank page.</p>
+
+<p>To find out more, I&rsquo;ve <a href="http://jgillich.github.io/mprogress/">put a small page together</a> that includes a live example of the library.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2014-01-10-smaller-moment-js/">Smaller Moment.js</a></h1>
+        <span class="post-date">Jan 10 2014</span>
+        <p><a href="http://momentjs.com/">Moment.js</a> is a great JavaScript library that makes working with time a lot easier. I totally love it, but there is one problem: It is huge! That is because <code>moment-with-langs.js</code> includes all supported languages, and they support <a href="https://github.com/moment/moment/tree/develop/lang">a lot of them</a>!</p>
+
+<p>Now the good news is that you can build a custom version of Moment.js with just the languages you need. To do this, you need Git, <a href="http://nodejs.org/">Node.js</a> and <a href="http://gruntjs.com/">Grunt</a> - but you have these already, right?</p>
+
+<p>Let&rsquo;s start by fetching the repository and installing dependencies:</p>
+
+<pre><code>git clone https://github.com/moment/moment.git
+cd moment
+git checkout master
+npm install
+</code></pre>
+
+<p>Now simply run the below command with a comma seperated list of all languages you need (German and French in this example) - all languages in the <code>lang/</code> folder can be embedded.</p>
+
+<pre><code>grunt release --embed_languages=de,fr
+</code></pre>
+
+<p>Note that english is always included and there is not way to change that. When the command finishes, you&rsquo;ll find your custom version at <code>min/moment-with-customlangs.js</code>.</p>
+
+<p>The resulting file size is around 70 KB with a single language - much better than the default 270 KB.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="https://jakob.gillich.me/post/2013-11-25-my-first-freebsd-port/">My First FreeBSD Port</a></h1>
+        <span class="post-date">Nov 25 2013</span>
+        
+
+<p>I&rsquo;ve recently created a FreeBSD port for Ghost. Overall, it was a pretty frustrating experience. The biggest issue was that there&rsquo;s just so few resources on the web about it.</p>
+
+<p>Yes, the official documentation is pretty good. But on the other hand, it actually answered very few of my questions. One example: Ports contain a <em>plist</em> file that lists all files that belong to it. There is documentation about it and it also has a section about <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/porters-handbook/plist-dynamic.html">dynamic plists</a>. It tells you when you can use a dynamic plist, but it&rsquo;s missing any instructions on how you actually implement one.</p>
+
+<p>Since FreeBSD is not as popular as Linux, there are <strong>a lot</strong> less forum/blog posts and mailing list entries. You really can&rsquo;t blame FreeBSD for that, but it makes finding solutions a lot harder. That&rsquo;s also one of the reasons why I&rsquo;m writing this.</p>
+
+<p>But there is one thing that has helped me a lot: <strong>Reading other ports</strong>. You will gain a lot from that as most ports are written by experienced contributors. And if you struggle too much, there are a lot of helpful people hanging around on the forums and mailing lists.</p>
+
+<h3 id="challenges:baf6692ef281c767a9a73cb55100b663">Challenges</h3>
+
+<p>There were a few challenges I had to face. Once I even fixed a issue by switching to a fresh jail and abandoning the old. So please - if you are a newbie, use a jail so you don&rsquo;t mess up your production system!</p>
+
+<h4 id="extract-to-subdirectory:baf6692ef281c767a9a73cb55100b663">Extract to Subdirectory</h4>
+
+<p>The Ghost source code is a zip file that contains no sub folder. Doesn&rsquo;t sound like a big deal, right? Actually, it is. If the source code extracts directly into <code>${WRKDIR}</code>, it is pretty hard moving it into <code>${STAGEDIR}</code> without specifying every single file because the latter directory is inside the former.</p>
+
+<p>But this can be solved by using a custom <code>do-extract</code>:</p>
+
+<pre><code>do-extract:
+    ${MKDIR} ${WRKSRC}
+    ${LOCALBASE}/bin/unzip -d ${WRKSRC} ${DISTDIR}/${DISTFILES}
+</code></pre>
+
+<h4 id="set-correct-permissions:baf6692ef281c767a9a73cb55100b663">Set correct permissions</h4>
+
+<p>After extracting the files, they were set to <code>100</code>. Not very useful, but using <code>@mode 755</code> in the <code>plist</code> fixed it. You can also use <code>@owner somebody</code> and <code>@group somegroup</code> if you want to.</p>
+
+<h4 id="dynamic-plist:baf6692ef281c767a9a73cb55100b663">Dynamic plist</h4>
+
+<p>Implementing a dynamic plist wasn&rsquo;t that hard. You simply need to specify <code>PLIST= ${WRKDIR}/plist</code> and then generate this file in the <code>pre-install</code> target like this:</p>
+
+<pre><code>cd ${WRKSRC}; ${FIND} . -type f | cut -c2- \
+    | ${SED} 's|^|www/ghost|' \
+    | ${SORT} -r &gt;&gt; ${PLIST}
+${ECHO_CMD} &quot;@comment directories&quot; &gt;&gt; ${PLIST}
+cd ${WRKSRC}; ${FIND} . -type d | cut -c2- \
+    | ${SED} 's|^|@dirrm www/ghost|' \
+    | ${SORT} -r &gt;&gt; ${PLIST}
+</code></pre>
+
+<p>This uses find to get a list of files, corrects the path and appends them to the plist. That&rsquo;s all you have to do.</p>
+
+<h3 id="learn-from-me:baf6692ef281c767a9a73cb55100b663">Learn from me</h3>
+
+<p>You can find the full code of my port in the <a href="https://github.com/TryGhost/Ghost-Config/tree/master/freebsd/ghost">Ghost-Config</a> repository. Feel free to check it out, study it and send me your improvements.</p>
+
+    </div>
+  
+</div>
+
+<div class="pagination">
+  
+  <a class="pagination-item older" href="/page/3/">Older</a>
+  
+
+  
+  <a class="pagination-item newer" href="/">Newer</a>
+  
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

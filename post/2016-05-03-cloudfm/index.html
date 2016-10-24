@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      CloudFM &middot; Jakob Gillich
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Minimalist, developer. <a href="mailto:jakob@gillich.me">Say hi</a></p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="/">Home</a>
+    <a class="sidebar-nav-item " href="/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+
+  </nav>
+
+  <div class="sidebar-item">
+    <p>All content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Jakob Gillich</a>
+            <small>Personal blog</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">CloudFM</h1>
+  <span class="post-date">May 3 2016</span>
+  
+
+<p>Over the last few months, I&rsquo;ve been working on a next-generation music player
+for the age of &ldquo;servers connected to the internet&rdquo;, also known as the &ldquo;cloud&rdquo;.
+Because I am bad at naming things, I called it <a href="https://github.com/cloudfm/cloudfm">CloudFM</a>.</p>
+
+<p>You don&rsquo;t actually need to click the link, because there&rsquo;s nothing to see there.
+I&rsquo;m mainly putting this out there because I want to regularly share progress
+I&rsquo;ve made. But let&rsquo;s start with what I&rsquo;ve done so far.</p>
+
+<h3 id="why-i-m-doing-this:bfc9e93011646c659275950cfe33bd5a">Why I&rsquo;m doing this</h3>
+
+<p>Long story short, I loved Rdio, then Rdio shut down. Turns out the alternatives
+aren&rsquo;t as good as Rdio and a lot of them even require Flash (2016??).
+I switched to Subsonic, which works ok, but Rdio was just so much better in so
+many ways. So I&rsquo;m building my own thing instead.</p>
+
+<p>CloudFM is a music player that integrates a plethora of cloud services
+(think Spotify, YouTube, Dropbox, SoundCloud and more) into a single player
+interface. Since mobile internet is expensive and not always available, I want
+to make it offline-capable as much as possible. And nowadays, you have so much
+storage space on your phone, meanwhile your tiny SSD on your notebook
+is constantly running out of space - CloudFM will let you store your music
+on your phone, and listen to it on your desktop.</p>
+
+<h3 id="micro-services-written-in-rust:bfc9e93011646c659275950cfe33bd5a">Micro-services written in Rust</h3>
+
+<p>To be honest, I did not intend to use a micro-service architecture from the start.
+I actually wrote a monolithic server first, until I realized: I&rsquo;m going to
+need a lot of this code at different places. For example, indexing code will
+have to run on the server side, but also as part of a GUI desktop app. That is
+why I turned my server into a library that compiles to a couple of binaries:</p>
+
+<ul>
+<li><code>indexd</code>: The indexing daemon, it indexes music from various online services (and local files).</li>
+<li><code>proxyd</code>: Give it a track ID, it will respond with a audio file, not matter where
+it is stored. In the future, it will also do things like on the fly re-encoding
+of files, and more.</li>
+<li><code>manager</code>: A desktop app, to index and serve local files. Will probably use the
+excellent GTK bindings for Rust. Or maybe the Qt Quick bindings, because
+GTK isn&rsquo;t actually that great on platforms other than Linux. Ideally, both.</li>
+</ul>
+
+<h3 id="web-app-written-in-typescript-react-redux:bfc9e93011646c659275950cfe33bd5a">Web app written in TypeScript/React/Redux</h3>
+
+<p>Initially, I started writing it in Elm. It was an interesting experiment,
+and there are a lot of things I like about the language, but the cons didn&rsquo;t
+quite outweight the pros. The short version: The language has a few shortcomings
+even in its domain (web apps), the ecosystem is rather small, integrating
+existing JavaScript libraries and APIs is a lot of work.</p>
+
+<p>Searching for an alternative, I decided to use TypeScript first. I treat it
+as a very powerful linter, if your code passes the linter (compiles), it&rsquo;s
+very likely correct. Less edit-tab-reload-tab-edit, more instant feedback
+through your editor. While the type system is not as good as Rust&rsquo;s, and Redux
+is not very TypeScript-friendly, I do not regret it at all, partially because of
+the awesome TypeScript integration in Visual Studio Code.</p>
+
+<p>Choosing a front-end framework was a really straightforward process: I knew
+I wanted a native mobile app, because hybrid apps just aren&rsquo;t that great. And
+since we bascially require PouchDB for offline availability of the database,
+React and React Native are pretty much the only viable option. Together with
+Redux, we&rsquo;ve got a pretty nice and Elm-like stack with a big ecosystem.</p>
+
+<h3 id="what-works:bfc9e93011646c659275950cfe33bd5a">What works</h3>
+
+<p>It&rsquo;s been a bit over a week since I started rewriting the web app, and
+here&rsquo;s what it looks like:</p>
+
+<p><img src="/images/cloudfm.png" alt="" /></p>
+
+<p>This is just a very early prototype, expect things to change, a lot. A lot
+of the features you&rsquo;d expect from any player aren&rsquo;t there, yet. The design
+will also definitely change in the future.</p>
+
+<p>What&rsquo;s not visible on the screenshot is that the music is not just local, but
+also from Jamendo. In the future, a lot more backends will follow.</p>
+
+<h3 id="what-s-next:bfc9e93011646c659275950cfe33bd5a">What&rsquo;s next</h3>
+
+<p>My goals for this week:</p>
+
+<ul>
+<li>Continue work on my WebDAV client for Rust and then implement the WebDAV backend</li>
+<li>Make the web app usable for everyday listening</li>
+<li>Start working on a Musicbrainz client</li>
+<li>Read Design for Hackers</li>
+</ul>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+
